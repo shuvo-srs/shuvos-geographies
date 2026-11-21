@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shuvo's Geography Knowledge Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a reading column (the argument) beside a living graph (the evidence); three layouts of one graph — web, convergence rings, timeline. Palette borrowed from Chorascape. */
+:root{
+  --paper:#F2EDE3; --paper-2:#E9E2D4; --ink:#1D1C1A; --muted:#6A655B; --line:#CDC4B2;
+  --c-place:#5F7F5A; --c-edu:#22406A; --c-work:#B07F22; --c-project:#A65439;
+  --c-output:#6D5383; --c-method:#3F6C78; --c-person:#8A7C64; --c-lesson:#1D1C1A; --c-core:#1D1C1A;
+  --accent:#B07F22;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15171A; --paper-2:#1D2024; --ink:#ECE6DA; --muted:#A39D91; --line:#3A3D42;
+    --c-place:#8FB088; --c-edu:#86A6D6; --c-work:#DDB05A; --c-project:#E08A6C;
+    --c-output:#B79AD0; --c-method:#7DB2BF; --c-person:#BFB39C; --c-lesson:#ECE6DA; --c-core:#ECE6DA;
+    --accent:#DDB05A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15171A; --paper-2:#1D2024; --ink:#ECE6DA; --muted:#A39D91; --line:#3A3D42;
+  --c-place:#8FB088; --c-edu:#86A6D6; --c-work:#DDB05A; --c-project:#E08A6C;
+  --c-output:#B79AD0; --c-method:#7DB2BF; --c-person:#BFB39C; --c-lesson:#ECE6DA; --c-core:#ECE6DA;
+  --accent:#DDB05A; color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;display:flex;overflow:hidden}
+aside{width:390px;flex:none;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:26px 26px 40px;display:flex;flex-direction:column;gap:22px;background:var(--paper)}
+main{flex:1;position:relative;min-width:0;height:100%}
+h1{font-family:var(--f-display);font-weight:400;font-size:31px;line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--accent)}
+h2{font-family:var(--f-display);font-weight:600;font-size:19px;line-height:1.2;margin:0;text-wrap:balance}
+h3{font-family:var(--f-body);font-weight:600;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+p{margin:0}
+.lede{font-family:var(--f-display);font-size:16.5px;line-height:1.5;color:var(--ink)}
+.small{font-size:12.5px;color:var(--muted)}
+.byline{font-size:12px;color:var(--muted);margin-top:8px}
+.strands{display:flex;flex-direction:column;gap:6px}
+.strand{all:unset;cursor:pointer;display:grid;grid-template-columns:22px 1fr;gap:2px 10px;padding:9px 10px;border-radius:6px;border:1px solid transparent}
+.strand:hover{background:var(--paper-2)}
+.strand:focus-visible,.seg button:focus-visible,.chip:focus-visible,.link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.strand[aria-pressed="true"]{background:var(--paper-2);border-color:var(--line)}
+.strand .num{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding-top:3px}
+.strand .nm{font-family:var(--f-display);font-size:16px;font-weight:600}
+.strand .bl{grid-column:2;font-size:12.5px;color:var(--muted);line-height:1.45}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 9px 3px 7px;border:1px solid var(--line);border-radius:99px;user-select:none}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip[aria-pressed="false"]{opacity:.38;text-decoration:line-through}
+#detail{display:none;flex-direction:column;gap:14px}
+#detail.on{display:flex}
+#overview.off{display:none}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tag i{width:9px;height:9px;border-radius:50%}
+.when{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.body p{font-family:var(--f-display);font-size:15.5px;line-height:1.55;margin:0 0 10px}
+.cv{font-size:13px;border-left:2px solid var(--line);padding-left:10px;color:var(--ink)}
+.cv b{font-weight:600}
+.mapped{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.conn{display:flex;flex-direction:column;gap:3px}
+.link-btn{all:unset;cursor:pointer;display:flex;gap:8px;align-items:baseline;font-size:13px;padding:3px 4px;border-radius:4px}
+.link-btn:hover{background:var(--paper-2)}
+.link-btn i{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-1px)}
+.link-btn .rel{color:var(--muted);font-size:12px;margin-left:auto;text-align:right;white-space:nowrap}
+.path{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:12.5px}
+.path span.arrow{color:var(--muted)}
+.path .link-btn{padding:1px 4px;display:inline-flex}
+.back{all:unset;cursor:pointer;font-size:12px;color:var(--muted)}
+.back:hover{color:var(--ink)}
+.toolbar{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;pointer-events:none}
+.toolbar>*{pointer-events:auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--paper)}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;font-size:12.5px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.hint{font-size:12px;color:var(--muted);background:var(--paper);padding:4px 8px;border-radius:5px}
+svg{width:100%;height:100%;display:block;cursor:grab}
+svg:active{cursor:grabbing}
+.link{stroke:var(--line);stroke-width:1}
+.link.hi{stroke:var(--ink);stroke-opacity:.55;stroke-width:1.3}
+.link.path{stroke:var(--accent);stroke-width:2.6;stroke-opacity:1}
+.node circle.dot{stroke:var(--paper);stroke-width:1.5}
+.node.lesson circle.dot{fill:var(--paper)!important;stroke:var(--ink);stroke-width:1.6}
+.node.core circle.dot{stroke:var(--accent);stroke-width:3}
+.node .grp{fill:none;stroke:var(--c-person);stroke-width:1.4}
+#tip{position:absolute;pointer-events:none;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 4px 14px rgba(0,0,0,.12);display:none;z-index:5}
+#tip b{display:block;font-size:12.5px;margin-bottom:3px}
+#tip ul{margin:0;padding-left:16px}
+#tip .k{color:var(--muted);font-size:11px}
+.members{margin:0;padding-left:18px;font-family:var(--f-display);font-size:15px;line-height:1.5}
+.node .ring{fill:none;stroke:var(--c-place);stroke-dasharray:2 2.5;stroke-width:1.1}
+.node text{font-family:var(--f-body);font-size:10.5px;fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:3.2px;stroke-linejoin:round;pointer-events:none}
+.node.lesson text{font-family:var(--f-display);font-style:italic;font-size:12px}
+.node.core text{font-family:var(--f-display);font-size:15px;font-weight:600}
+.node.minor text{opacity:0;transition:opacity .15s}
+svg.zoomed .node.minor text,.node.minor.hi text,.node.minor.sel text{opacity:1}
+.node{cursor:pointer;outline:none}
+.node:focus-visible circle.dot{stroke:var(--accent);stroke-width:3}
+.node.dim,.link.dim{opacity:.12}
+svg.focusing .node.dim text{opacity:0}
+svg.focusing .node.hi text{opacity:1}
+.node.sel circle.dot{stroke:var(--accent);stroke-width:3}
+.node.hidden,.link.hidden{display:none}
+svg.posmode .link:not(.hi):not(.path){stroke-opacity:.35}
+svg.posmode .node.core circle.dot{transform:scale(.5)}
+svg.posmode .node.core text{transform:translateY(-12px)}
+.bandlab{font-family:var(--f-body);font-size:10px;letter-spacing:.09em;text-transform:uppercase;fill:var(--muted)}
+.yearlab{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+.ringline{fill:none;stroke:var(--line);stroke-dasharray:3 4}
+.guide{pointer-events:none}
+.assess{display:flex;flex-direction:column;gap:9px;font-size:13px;line-height:1.5}
+.assess b{font-weight:600}
+.foot{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+@media (max-width:820px){
+  body{flex-direction:column;overflow:auto;height:auto}
+  aside{width:auto;height:auto;border-right:none;border-bottom:1px solid var(--line);padding:20px 16px;order:2}
+  main{height:74vh;min-height:440px;order:1;flex:none}
+  h1{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){ .node.minor text{transition:none} }
+</style>
+</head>
+<body>
+<aside id="panel">
+  <section id="overview">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h1>Many places, one way of looking: <em>reading the world spatially</em></h1>
+      <p class="byline">Sakib Rahman Siddique Shuvo · a knowledge graph for taking stock, 1998–2027</p>
+      <p class="lede">A floodplain childhood, a river dissertation, field tours in fifty districts, climate internships, enterprise GIS and deep-learning climate models look like separate careers. Laid out as a graph, they run into a small set of lessons. The graph is for seeing where those lessons are well supported, where they are thin, and which way the work is moving.</p>
+      <p class="small">Click any node to read it and see its route to the centre. Pick a strand to follow one line of the story. <b>Position</b> (above the graph) places everything on two axes, technical ↔ interpretive and physical ↔ social, and traces how the centre of gravity has moved.</p>
+    </div>
+    <div style="margin-top:22px" id="assess">
+      <h3>Reading the position</h3>
+      <div class="assess">
+        <p><b>Dense.</b> <span id="a-hubs"></span> <span id="a-era"></span> The river and flood strand carries the most research outputs (<span id="a-river"></span>).</p>
+        <p><b>Thin.</b> The interpretive side is rich in lessons, essays and op-eds, but only one peer-reviewed output leans that way (ICT in Build Back Better), and none yet in critical or digital geography. Spatial knowledge graphs, the method the prospectus rests on, has one prototype. Climate modelling has a thesis and a poster, no paper yet. The <span id="a-esri"></span> Esri client projects feed talks and lessons but no research paper yet.</p>
+        <p><b>Direction.</b> <span id="a-drift"></span></p>
+      </div>
+    </div>
+    <div style="margin-top:22px">
+      <h3>Seven strands that converge</h3>
+      <div class="strands" id="strands"></div>
+    </div>
+    <div style="margin-top:22px">
+      <h3>Node types · tap to hide or show</h3>
+      <div class="legend" id="legend"></div>
+      <p class="small" style="margin-top:8px">Dashed ring = a chapter pinned on the <i>My Life in Map</i> portfolio (16 points). Solid ring = a group of people; hover or click to see the names.</p>
+    </div>
+    <p class="foot" style="margin-top:22px">Built from both CVs, the LinkedIn profile, the 2023 StoryMap, the Choroscape About page and the 16-point life-map GeoJSON. Date of birth follows the certificate. Where sources disagree on other dates, the newer academic CV is used. Position scores are an approximate reading. Drag a node to disagree.</p>
+  </section>
+  <section id="detail" aria-live="polite"></section>
+</aside>
+<main>
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Layout">
+      <button data-mode="web" aria-pressed="true">Web</button>
+      <button data-mode="rings" aria-pressed="false">Convergence</button>
+      <button data-mode="time" aria-pressed="false">Timeline</button>
+      <button data-mode="pos" aria-pressed="false">Position</button>
+    </div>
+    <div class="seg"><button id="reset" aria-pressed="false">Reset view</button></div>
+    <span class="hint" id="hint">Hover for names · scroll to zoom · drag to pan</span>
+  </div>
+  <div id="tip"></div>
+  <svg id="graph" role="img" aria-label="Knowledge graph of places, education, work, projects, methods and lessons converging on a core research question"></svg>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+const GEO = __GEO__;
+
+const TYPES = {
+  place:  {label:"Place",        color:"--c-place",  r:8,   ring:1.0},
+  person: {label:"Person",       color:"--c-person", r:6.5, ring:1.0},
+  edu:    {label:"Education",    color:"--c-edu",    r:9.5, ring:.80},
+  work:   {label:"Work",         color:"--c-work",   r:10,  ring:.80},
+  project:{label:"Project",      color:"--c-project",r:6,   ring:.62},
+  output: {label:"Publication / talk", color:"--c-output", r:5.5, ring:.62},
+  method: {label:"Method / skill",color:"--c-method",r:8,   ring:.42},
+  lesson: {label:"Lesson learned",color:"--c-lesson",r:8.5, ring:.24},
+  core:   {label:"Where it leads",color:"--c-core",   r:24,  ring:0}
+};
+const MINOR = new Set(["project","output","person"]);
+
+// geo: OBJECTID -> node id
+const GEOMAP = {13:"p_birth",14:"p_maternal",15:"p_paternal",2:"p_uttar",4:"e_primary",5:"e_secondary",3:"p_teen",1:"p_home",6:"e_hsc",7:"e_ju",8:"w_irsgis",9:"w_icccad",10:"w_waterkeepers",11:"e_buet",12:"w_esri",16:"p_inlaws"};
+
+const N = [
+ // ---- places
+ {id:"p_birth",type:"place",label:"Hello World! · DMCH, Dhaka",yr:1998},
+ {id:"p_maternal",type:"place",label:"Maternal home",yr:1998},
+ {id:"p_paternal",type:"place",label:"Paternal home",yr:1998},
+ {id:"r_dhaleshwari",type:"place",label:"Dhaleshwari River",yr:1998,desc:"The river whose floodplain holds the maternal home. In the monsoon it turns the village into islands; in winter the same land goes yellow with mustard. The first landscape he knew was one that never stayed the same through a year."},
+ {id:"p_uttar",type:"place",label:"Uttar Seuta",yr:2000},
+ {id:"p_teen",type:"place",label:"The highway desk",yr:2010},
+ {id:"p_home",type:"place",label:"Home · Bandutia, Manikganj",yr:2014},
+ {id:"r_kaliganga",type:"place",label:"Kaliganga River",yr:2014,desc:"The river Manikganj grew around, and the one he is most connected to. He came back to it as a researcher: his undergraduate dissertation looked at how its morphology changes and how people perceive and live with those changes."},
+ {id:"p_inlaws",type:"place",label:"In-laws · Himalayan piedmont",yr:2025},
+ // ---- education
+ {id:"e_primary",type:"edu",label:"Experimental School, PTI",yr:2004,end:2008},
+ {id:"e_secondary",type:"edu",label:"Secondary school",yr:2009,end:2014},
+ {id:"e_hsc",type:"edu",label:"Higher secondary college",yr:2014,end:2016},
+ {id:"e_ju",type:"edu",label:"BSc Geography & Environment, JU",yr:2017,end:2022,cv:"<b>B.Sc. (Hons) Geography and Environment</b>, Jahangirnagar University · CGPA 3.54/4.00 · merit scholarship (top 5%)."},
+ {id:"e_buet",type:"edu",label:"MSc Climate Modelling, IWFM–BUET",yr:2023,end:2026,cv:"<b>M.Sc. Climate Modelling and Risk Management</b> (part-time), Institute of Water and Flood Management, BUET · 2023–2026."},
+ {id:"e_phd",type:"edu",label:"PhD aspiration",yr:2027,desc:"The next step he is working toward: doctoral research on the diluted geographical imagination. People once formed a sense of their own place from what they saw directly and from institutional pictures of it. Now vernacular digital media carry other places, with their own authority, into everyday feeds, and those pictures press on how people imagine where they live and what they should do there. The aim is to trace that dilution across scales, with crises such as floods, energy or water as cases, critical geography to ask whose picture counts, and a spatial knowledge graph to follow how it travels."},
+ // ---- work
+ {id:"w_irsgis",type:"work",label:"IRSGIS, Jahangirnagar",yr:2018,end:2022,cv:"<b>Research Assistant</b> (project-based), Institute of Remote Sensing and GIS, JU · May 2018 – Feb 2022. Field surveys, spatial data collection, project coordination; co-led a citizen science initiative on flood vulnerability."},
+ {id:"w_icccad",type:"work",label:"ICCCAD, IUB",yr:2019,end:2021,whenTxt:"2019 (mentorship) · Oct 2020 – Dec 2021",cv:"<b>Research Intern</b>, International Centre for Climate Change and Development · Oct 2020 – Dec 2021. Nature-based Solutions, climate finance and climate services. Gold awardee, Youth Mentorship Programme (Nov 2019)."},
+ {id:"w_cipr",type:"work",label:"CIPRB · Social Scientist",yr:2021,end:2021,desc:"A short field role in early 2021 at the Centre for Injury Prevention & Research, Bangladesh: collecting, sorting and cleaning geospatial data on immunisation and primary health care centres for UNICEF and the Ministry of Health. His first geography outside the environment: who can reach which service, and where."},
+ {id:"w_waterkeepers",type:"work",label:"Waterkeepers Bangladesh",yr:2021,end:2022,cv:"<b>Research Intern</b>, Waterkeepers Consortium · Sept 2021 – Aug 2022. Environmental research and statistics; co-authored the <i>State of the Dhaka Environment 2022</i> report; community engagement in environmental governance."},
+ {id:"w_esri",type:"work",label:"Esri Bangladesh",yr:2023,end:2026,cv:"<b>Junior Consultant</b> (Apr 2026 – present), <b>GIS Analyst</b> (Nov 2023 – Apr 2026), Esri Bangladesh. Enterprise geospatial systems, digital twins and spatial applications for clients in Bangladesh and Malaysia."},
+ {id:"w_youthmappers",type:"work",label:"YouthMappers JU · President",yr:2021,end:2023,desc:"Led the Jahangirnagar YouthMappers chapter from August 2021 to September 2023: international workshops and talks on geospatial technology, a grant from HOT (Humanitarian OpenStreetMap Team) and the World Bank, secured under his presidency, that funded seminars and a student conference, two YouthMappers awards (including second place in Map Our History, 2021), and a part in the Ministry of Science and Technology research project."},
+ {id:"w_soas",type:"work",label:"SOAS University of London · RA",yr:2019,end:2019,desc:"Research assistant, March–May 2019: translation and transcription for a SOAS research project in Bangladesh."},
+ // ---- people
+ {id:"tawhid",type:"person",label:"Dr. Sheikh Tawhidul Islam",yr:2018,desc:"Mentor at IRSGIS, Jahangirnagar. Introduced him to GIS, remote sensing and research as a way of answering questions; co-author on the Build Back Better paper and the youth flood-risk chapter; guided the reframing of the PhD prospectus."},
+ {id:"nurul",type:"person",label:"Prof. Dr. Nurul Islam",yr:2017,desc:"Supervisor of his BSc dissertation on oxbow-lake formation and wetland management at Jahangirnagar, and the teacher who opened up river morphology and hydraulics for him. At Waterkeepers Bangladesh he worked under Prof. Islam's guidance. Co-author across the river and flood work: Build Back Better, the USM flood-mapping webinar, the oxbow-lake LULC paper, the AGA presentation and the Rangpur flood-vulnerability manuscript."},
+ {id:"shamsul",type:"person",label:"Faculty · physical geography",yr:2017,members:["Dr. Shamsul Alam"],desc:"Faculty at Jahangirnagar who taught him to look carefully at the physical Earth through geomorphology."},
+ {id:"ansari",type:"person",label:"Faculty · human geography",yr:2017,members:["Dr. Nayeem Aziz Ansari"],desc:"Faculty at Jahangirnagar who widened his engagement with human geography, including its capacity for critique and satire."},
+ {id:"saiful",type:"person",label:"Prof. A.K.M. Saiful Islam",yr:2023,desc:"MSc supervisor at IWFM, BUET, and co-author of the AGU 2026 poster on spatial predictors in CMIP6 downscaling."},
+ {id:"wife",type:"person",label:"Sharmin Sultana Alis",yr:2017,desc:"His wife, met at Jahangirnagar. A geographer and mapmaker herself (her River Memories map stacks six surveys of the Jamuna–Brahmaputra, 1776–2025), and the first critic of every piece of work he makes. Through marriage she also brought a second geography into his life: the Himalayan piedmont."},
+ {id:"g_gis",type:"person",label:"Faculty & senior students · GIS",yr:2018,members:["Krishna Prasad Mondal","Al Jubaer","Mostak Arman Sakif"],desc:"The faculty and senior students around IRSGIS whose GIS knowledge set the bar. Krishna Prasad Mondal and Al Jubaer were also co-authors on the youth flood-risk citizen science chapter."},
+ {id:"g_icccad",type:"person",label:"ICCCAD colleagues",yr:2019,members:["Tasfia Tasnim","Riadadh Hossain","Saqib Huq","Adiba Bintey Kamal"],desc:"The ICCCAD team he worked with across Nature-based Solutions, climate services and climate finance. Tasfia Tasnim led the climate services in higher education report he co-authored."},
+ {id:"joyashree",type:"person",label:"Prof. Dr. Joyashree Roy",yr:2022,desc:"IPCC author at the Asian Institute of Technology, under whose guidance he worked on the Jahangirnagar campus carbon footprint project."},
+ {id:"saleemul",type:"person",label:"Dr. Saleemul Huq",yr:2019,desc:"The late founding director of ICCCAD, whose centre shaped how he came to see climate change: as science, policy, institutions and activism together."},
+ {id:"hadi",type:"person",label:"Mohammad Abdul Hadi",yr:2019,desc:"Country Manager, Esri Bangladesh (Esri South Asia). First met through IRSGIS at Jahangirnagar, before Esri became his workplace."},
+ {id:"g_esri",type:"person",label:"Guides at Esri Bangladesh",yr:2023,members:["Sakil Ahmed","Mohiuddin Shovon","Md Ashaduzzaman Alif"],desc:"The colleagues who guided him through professional GIS: enterprise systems, client delivery, and what GIS looks like inside an institution."},
+ {id:"g_unifriends",type:"person",label:"Friends · Jahangirnagar",yr:2017,members:["Faiyad H Rishal","Soumic Samad"],desc:"University friends who were part of the everyday geography of the Jahangirnagar years."},
+ {id:"g_schoolfriends",type:"person",label:"Friends · school",yr:2009,members:["Ashikur Rahman Radh","Sawmik Samad","Syed Sammo Swapno","Rafiqul Islam Shahria","Mahmudul Hasan Shuvo"],desc:"The friends from school who made the teams, plans, haunted-place investigations and imaginary political parties. They contributed to his upbringing and to his geographical knowledge long before he had a word for it."},
+ {id:"g_fbfriends",type:"person",label:"Facebook friends",yr:2015,members:["Rasha Noel","Shafiqul Shajib","Sheikh Salim al Deen","Rizwanul Hasan Rifat","Abdullah al Masud","Kais Mahmood"],desc:"People met and read through Facebook whose posts and conversations fed his thinking."},
+ {id:"p_social",type:"place",label:"Social media · a digital place",yr:2012,desc:"Facebook and LinkedIn: where he writes, shares maps and argues, and where other people's places reach him. It is also the root of the prospectus: the idea of a diluted geographical imagination came from his own experience of digital media."},
+ // ---- projects
+ {id:"pr_blog",type:"project",label:"First blog, HTML & stories",yr:2012,desc:"In secondary school: a first blog, early experiments with HTML, first stories, plus teams of friends investigating 'haunted' places and inventing political parties. Curiosity, storytelling and organisation, the same mix that later runs his website and atlases."},
+ {id:"pr_citsci",type:"project",label:"Citizen science for flood vulnerability",yr:2020,end:2021,desc:"Co-led (Ministry of Science and Technology; Manikganj and Satkhira). Trained local youth as citizen scientists, built a geospatial database of flood vulnerability with them, and turned it into community flood-risk action."},
+ {id:"pr_carbon",type:"project",label:"JU campus carbon footprint (AIT)",yr:2022,end:2023,desc:"Co-led an energy-demand-based carbon footprint assessment of the Jahangirnagar campus for the Asian Institute of Technology: electricity, transport and facilities, with geospatial methods and mitigation strategies."},
+ {id:"pr_unicef",type:"project",label:"EPI/PHC service mapping (UNICEF)",yr:2021,desc:"GPS field mapping of immunisation and primary health care services, stakeholder mapping and gap analysis in Narayanganj and Rangpur City Corporations."},
+ {id:"pr_nbs",type:"project",label:"NbS portal for Bangladesh (Oxford NbSI)",yr:2021,desc:"Background research, data and content for a Nature-based Solutions portal for Bangladesh, with the Nature-based Solutions Initiative, University of Oxford."},
+ {id:"pr_climserv",type:"project",label:"Bangladesh Climate Service Academies",yr:2021,desc:"With ICCCAD, IRI Columbia, CIMMYT and BMD: background documents, training modules and coordination for the academies."},
+ {id:"pr_climfin",type:"project",label:"Climate finance (FCDO)",yr:2021,desc:"Research on agricultural finance and climate funding mechanisms."},
+ {id:"pr_walk",type:"project",label:"Walk the Walk (ARROW)",yr:2021,desc:"Bengali translation of stories, web content and research for a gamified climate and SRHR education project in Satkhira."},
+ {id:"pr_dhakaenv",type:"project",label:"Dhaka environmental governance (USAID)",yr:2022,desc:"Community participation in environmental governance in Dhaka with Counterpart International: water and air pollution, waste, and the State of the Dhaka Environment 2022 report."},
+ {id:"pr_penang",type:"project",label:"Virtual Island of Penang · digital twin",yr:2024,end:2025,desc:"For MBPP, Malaysia: dashboards on urban infrastructure and service requests, 3D scene layers, BIM-to-GIS workflows and Survey123 forms for citizen feedback."},
+ {id:"pr_mbpphist",type:"project",label:"Historical Map Application (MBPP)",yr:2025,desc:"A historical map application for Penang Island City Council."},
+ {id:"pr_sesb",type:"project",label:"SESB GeoEnablement (Sabah)",yr:2025,desc:"Field data collection with Survey123 and Workforce, ETL into the enterprise geodatabase, and live dashboards of assets, outages and maintenance for Sabah Electricity."},
+ {id:"pr_jupem",type:"project",label:"JUPEM deep-learning feature extraction",yr:2025,end:2026,desc:"U-Net and ResNet workflows in ArcGIS Pro to extract roads, buildings and water bodies from imagery for Malaysia's Department of Survey and Mapping, plus faster cartographic generalisation tools."},
+ {id:"pr_rajuk",type:"project",label:"RAJUK digital twin · Dhaka",yr:2025,desc:"A 3D urban information and spatial-twin platform for Dhaka's development authority, and related plot-record tools."},
+ {id:"pr_bfd",type:"project",label:"GIS solution for the Forest Department (BFD)",yr:2026,desc:"January–June 2026: a Survey123 e-efficiency toolkit and dashboard for Bangladesh Forest Department staff, a report on the results, and the database, data model, web map and import pipeline for the forest land management information system (FLMIS)."},
+ {id:"pr_caab",type:"project",label:"CAAB height clearance portal",yr:2026,desc:"A citizen-facing height clearance application portal for the Civil Aviation Authority of Bangladesh, built on the ArcGIS JS SDK."},
+ {id:"pr_trees",type:"project",label:"National tree management system",yr:2026,desc:"A concept for a national system to steward Bangladesh's trees, framed as an Esri system of systems."},
+ {id:"pr_storymap",type:"project",label:"Story of a Space Interpreter",yr:2023,desc:"The first spatial portfolio, an ArcGIS StoryMap dated July 2023 (republished January 2024): a spatial biography in six parts (explorer, mapper, researcher, writer, human, moving forward), named after Raumdeuter, the 'space interpreter'."},
+ {id:"pr_lifemap",type:"project",label:"My Life in Map (new portfolio)",yr:2026,desc:"The new spatial portfolio: 16 mapped chapters, from Dhaka Medical College Hospital to the Himalayan piedmont, each told in his own voice. The dashed-ring nodes in this graph come from it."},
+ {id:"pr_chorascape",type:"project",label:"Chorascape",yr:2026,desc:"His personal website and intellectual atlas, 'thinking across places and scales': essays, notes, research and interactive atlases in one place."},
+ {id:"pr_election",type:"project",label:"Bangladesh Election & Conflict atlas",yr:2026,desc:"An interactive constituency-level electoral and conflict atlas, published on Chorascape."},
+ {id:"pr_football",type:"project",label:"Football Migration Atlas",yr:2026,desc:"Where the 2026 World Cup squads were born and where they play, with an essay written around the map."},
+ {id:"pr_seminars",type:"project",label:"GIS & research seminars · JU and YouthMappers",yr:2021,end:2023,desc:"Organised a run of seminars at Jahangirnagar and through YouthMappers on communicating GIS and research to students."},
+ {id:"pr_fossconf",type:"project",label:"Student Conference on FOSS GIS in Research",yr:2023,desc:"Led the team that organised a student conference on free and open-source GIS in research, with student presenters from across Bangladesh and abroad."},
+ {id:"pr_grant",type:"project",label:"HOT & World Bank grant · YouthMappers IRS-JU",yr:2022,desc:"A grant from the Humanitarian OpenStreetMap Team (through Open Mapping Hub Asia-Pacific) and the World Bank, won for the YouthMappers chapter at IRS-JU during his presidency. It funded the seminars and the FOSS GIS student conference."},
+ {id:"p_thailand",type:"place",label:"Thailand · AIT visit",yr:2023,desc:"A visit to the Asian Institute of Technology in Thailand for the energy-demand carbon footprint project with Jahangirnagar, travelling with university friends on the project team."},
+ {id:"pr_scifair",type:"project",label:"District science fair · 2013",yr:2013,desc:"District-level entry in the 34th National Science and Technology Week, and Jatiya Vidyut Shoptaho 2013. The newspapers' science pages were feeding the same curiosity."},
+ {id:"pr_fieldwork",type:"project",label:"Field tours · 50+ districts",yr:2017,end:2022,desc:"Roughly 70% of Bangladesh on foot and by boat: Dinajpur (the first research tour, 2017), brick-kiln air pollution, Jamuna charlands and the Tangail river islands where the Dhaleshwari leaves the Jamuna, the Chittagong Hill Tracts, the Sundarbans, the Satkhira coast, Cox's Bazar, Kaptai Lake, Ratargul, fishing and farming communities, and the slums of Mohammadpur and Mirpur."},
+ {id:"pr_walkriver",type:"project",label:"'Walk along the River' expedition",yr:2020,desc:"An expedition led by Prof. Sheikh Tawhidul Islam: walking a river and collecting audiovisual empirical data along the way. The idea for the fourth-year dissertation came from it."},
+ {id:"pr_craftmaps",type:"project",label:"Haunted Dhaka & stitched Dhanmondi Lake",yr:2024,end:2025,desc:"Craft maps made outside client work: a 'Ghostbusters Guide to Dhaka City' of Bengal's haunted urban legends, and Dhanmondi Lake drawn as embroidery, with the story of the lost Karwan Bazaar river that left it behind as an oxbow lake."},
+ // ---- research outputs
+ {id:"r_oxbow",type:"output",label:"BSc dissertation · oxbow lake & wetland policy",yr:2022,desc:"Synthesis of policy discourse and community response to wetland management, studied on an oxbow lake forming on the Kaliganga. Physical change, policy and perception read together."},
+ {id:"r_cmip6",type:"output",label:"MSc thesis · spatial predictors in CMIP6 downscaling",yr:2025,desc:"Compares spatial-predictor-based deep learning and machine learning methods for downscaling CMIP6 climate data over Bangladesh. The argument: physics-based climate modelling has a spatial dimension that geographic thinking can open up."},
+ {id:"r_dgi",type:"output",label:"Diluted geographical imagination · prospectus",yr:2026,desc:"The PhD prospectus. A sense of place once came from what people saw directly and from institutional representations. Now vernacular digital media show other places with their own authority and press on how people imagine their own. Disasters, energy, water or war can serve as the case. A spatially anchored knowledge graph is the method, with a working prototype already online."},
+ {id:"o_oped",type:"output",label:"Op-eds · Daily Star, New Age, Dhaka Tribune",yr:2020,desc:"Newspaper writing on heavy metals in food, Dhaka's air and landfills, COVID-19 and refugees, vertical housing for the urban poor, 'downscaling disasters' for finance, perception and climate action, and a decade of memes and TikTok."},
+ {id:"o_usm",type:"output",label:"GEE flood mapping · USM webinar 2021",yr:2021,desc:"Ongoing research on flood mapping and damage assessment with Google Earth Engine, presented with Md. Nurul Islam at Universiti Sains Malaysia's Geo-Informatics Unit webinar."},
+ {id:"o_coastal",type:"output",label:"Coastal hazards in Asia · IEJ 2020",yr:2020,desc:"Sanyal & Shuvo (2020), International Energy Journal 20(3A)."},
+ {id:"o_bbb",type:"output",label:"ICT in Build Back Better · IJDRBE 2022",yr:2021,desc:"Shuvo, Islam & Islam (2022), International Journal of Disaster Resilience in the Built Environment 13(2). First presented at AIT's 2nd ISDRSD, 2021. Digital technology inside disaster recovery: the seed of the later digital-geographies question."},
+ {id:"o_tribune",type:"output",label:"Climate Tribune perspective · 2021",yr:2021,desc:"A perspective piece written during the ICCCAD years."},
+ {id:"o_aga",type:"output",label:"AGA young geographers · Excellent Paper Award",yr:2023,desc:"Environmental dynamism and community perception in policy formulation, presented at the 3rd Workshop of Asian Geographers (Dec 2023), recognised among the best presented papers."},
+ {id:"o_youth",type:"output",label:"Youth in flood risk management · Springer 2025",yr:2023,desc:"Mondal et al., citizen science geospatial initiative in Bangladesh, ISDRSD proceedings (Lecture Notes in Civil Engineering)."},
+ {id:"o_climed",type:"output",label:"Climate services in higher education · 2024",yr:2024,desc:"Tasnim et al. (2024), ICCCAD–IRI Columbia University."},
+ {id:"o_lulc",type:"output",label:"ML-based LULC on an oxbow lake · 2025",yr:2025,desc:"Shuvo, Alis & Islam (2025), JU Journal of Geospatial Science: how well machine-learning classifiers work at fine scale for monitoring a Manikganj oxbow lake."},
+ {id:"o_rangpur",type:"output",label:"Household flood vulnerability, Rangpur · Natural Hazards",yr:2026,desc:"Islam et al., GIS–MCDA flood vulnerability model for Rangpur City Corporation, manuscript under revision."},
+ {id:"o_agu",type:"output",label:"AGU 2026 poster · CMIP6 downscaling",yr:2026,desc:"Shuvo & Islam, Evaluating the influence of spatial predictors on AI-based statistical downscaling of CMIP6 temperature over Bangladesh. Accepted, December 2026."},
+ {id:"o_gisday",type:"output",label:"GIS in Research · World GIS Day 2026",yr:2026,desc:"Opened Esri Bangladesh's World GIS Day programme at BRAC University with a talk on GIS in research (the 'Beyond Maps' deck), in front of about 100 students from DU, IUB, NSU, BRACU, Stamford, Daffodil and Jagannath universities."},
+ {id:"o_daffodil",type:"output",label:"Digital twin talk · Daffodil University",yr:2026,desc:"Opened an Esri Bangladesh session at Daffodil International University as the industry expert, speaking on digital twins to IICT, MCT and CSE students."},
+ // ---- methods
+ {id:"m_gis",type:"method",label:"Spatial analysis & cartography",yr:2018,desc:"ArcGIS Pro, QGIS, ArcMap; spatial statistics, hydrologic and cartographic analysis, MCDA."},
+ {id:"m_rs",type:"method",label:"Remote sensing & LULC",yr:2018,desc:"Google Earth Engine, Landsat, ENVI, ERDAS; radar remote sensing (ESA course, 2020)."},
+ {id:"m_part",type:"method",label:"Participatory & citizen-science mapping",yr:2020,desc:"Training volunteers, community data collection, stakeholder mapping, Survey123 field forms."},
+ {id:"m_qual",type:"method",label:"Qualitative & policy analysis",yr:2020,desc:"Interviews, literature and discourse analysis, report writing for policy audiences."},
+ {id:"m_code",type:"method",label:"Code & spatial databases",yr:2012,desc:"Python/ArcPy, R, JavaScript, SQL; PostgreSQL, SQL Server; Leaflet, OpenLayers, Mapbox."},
+ {id:"m_ml",type:"method",label:"GeoAI · machine & deep learning",yr:2022,desc:"Random forest and SVM classifiers, U-Net and ResNet extraction, CNN-based downscaling."},
+ {id:"m_climate",type:"method",label:"Climate modelling",yr:2023,desc:"CMIP6 data, statistical downscaling, climate risk (University of Chicago climate modelling course, 2023)."},
+ {id:"m_ent",type:"method",label:"Enterprise & Web GIS",yr:2023,desc:"ArcGIS Enterprise and Online, Experience Builder, Dashboards, GeoEvent, Workflow Manager, ArcGIS JS SDK with React."},
+ {id:"m_twin",type:"method",label:"Digital twins · 3D · CAD/BIM–GIS",yr:2024,desc:"3D scene layers, BIM-to-GIS integration, urban digital twins."},
+ {id:"m_writing",type:"method",label:"Writing & storytelling",yr:2012,desc:"Essays, stories, scientific writing in Bengali and English, translation, StoryMaps."},
+ {id:"m_graph",type:"method",label:"Spatial knowledge graphs",yr:2026,desc:"Graph databases anchored in GIS: the newest tool, and the one that holds the others together in the PhD design."},
+ // ---- lessons (his own conclusions, from the life map)
+ {id:"l_move",type:"lesson",label:"Movement is never random",yr:2010,desc:"From the study desk over the highway: students, then office workers, then children after the school bell. Movement is bound to times of day, and a road is an artery between spaces of interaction. 'I was beginning to look at the world spatially.'"},
+ {id:"l_story",type:"lesson",label:"Places are told as stories",yr:2012,desc:"Secondary school turned curiosity into projects, plots and a blog. Much of what he writes and thinks about now, he says, has its roots there, in a more mature form."},
+ {id:"l_field",type:"lesson",label:"Meet places before you represent them",yr:2017,desc:"From Jahangirnagar field trips: analysing geography means encountering landscapes, people and processes directly before turning them into data."},
+ {id:"l_critique",type:"lesson",label:"Geography can critique",yr:2019,desc:"Human geography carries critique, even satire. Asking whose picture of a place counts is part of the discipline's work."},
+ {id:"l_quant",type:"lesson",label:"Quantitative methods for qualitative questions",yr:2018,desc:"The central lesson from IRSGIS: spatial science is a way of answering questions, and numbers can investigate questions that are qualitative at heart."},
+ {id:"l_people",type:"lesson",label:"Science and people cannot be separated",yr:2021,desc:"ICCCAD showed science informing climate policy from the top; Waterkeepers showed activism starting from people's everyday environments and validating the science. Together: neither works alone."},
+ {id:"l_river",type:"lesson",label:"Physical change becomes part of how people know a place",yr:2022,desc:"From the Kaliganga dissertation: a river's changing form enters people's understanding of their own place."},
+ {id:"l_climate",type:"lesson",label:"Carry geographic thinking into climate science",yr:2023,desc:"The MSc was not a departure from geography; it was geography taken into climate models, through spatial predictors."},
+ {id:"l_infra",type:"lesson",label:"GIS is infrastructure, not just maps",yr:2023,desc:"Esri was a shock: GIS can be the connective fabric between an institution's data, processes and decisions. Spatial knowledge connected to action."},
+ {id:"l_culture",type:"lesson",label:"Geography is lived as landscape and culture",yr:2025,desc:"Floodplain and piedmont, maternal and paternal villages: differences between places are felt in landscape, culture and the ways people relate to where they live, not as lines on a map."},
+ // ---- core
+ {id:"core",type:"core",label:"Reading the world spatially",yr:2027,desc:"\"Perhaps that is the simplest way to describe the journey: I have been learning how to read the world spatially.\" (Choroscape, Where the Map Leads)\n\nThe strands meet at a working question rather than a finished claim: how do places, the people in them and the pictures of those places shape one another, now that so many pictures travel through digital media?\n\nEach strand brings something different. The floodplain and the Kaliganga show that a place is known through change. IRSGIS shows that numbers can answer qualitative questions. ICCCAD, Waterkeepers and the citizen-science work show that science and people move together. Esri shows GIS working as institutional infrastructure. BUET takes geographic thinking into climate models.\n\nThe PhD prospectus is the current attempt to hold these together: treating maps, models and spatial data as instruments that shape understanding, and testing a spatial knowledge graph as the way to trace that."}
+];
+
+const E = [
+ ["p_birth","p_maternal","grew up in"],["p_maternal","r_dhaleshwari","floodplain of"],["p_paternal","p_maternal","same landscape"],
+ ["p_maternal","l_culture"],["p_paternal","l_culture"],["p_inlaws","l_culture"],["wife","p_inlaws","her home"],["wife","e_ju","met at"],["wife","l_critique","critic of every work"],["wife","pr_craftmaps"],
+ ["p_uttar","e_primary","neighbourhood"],["p_birth","p_uttar"],["e_primary","e_secondary"],["p_teen","e_secondary","near school"],["p_teen","l_move"],
+ ["e_secondary","pr_blog"],["pr_blog","m_writing"],["pr_blog","m_code","first HTML"],["pr_blog","l_story"],["e_secondary","e_hsc"],["e_hsc","e_ju","admission season"],
+ ["e_hsc","p_home"],["p_home","r_kaliganga","beside"],["r_kaliganga","r_oxbow","studied"],["r_oxbow","l_river"],["e_ju","r_oxbow","dissertation"],
+ ["r_oxbow","o_lulc"],["r_oxbow","o_aga"],["r_oxbow","m_qual"],["o_lulc","m_rs"],["o_lulc","m_ml"],["shamsul","r_oxbow","geomorphology"],
+ ["e_ju","l_field","field trips"],["e_ju","nurul","BSc supervisor"],["e_ju","shamsul","teacher"],["e_ju","ansari","teacher"],["ansari","l_critique"],
+ ["nurul","r_oxbow","dissertation supervisor"],["nurul","w_waterkeepers","worked under his guidance"],["nurul","o_aga"],["nurul","o_bbb"],["nurul","o_lulc"],["nurul","o_rangpur"],["nurul","r_kaliganga","river morphology"],
+ ["e_ju","w_irsgis"],["tawhid","w_irsgis","mentor"],["w_irsgis","l_quant"],["w_irsgis","pr_citsci"],["w_irsgis","pr_carbon"],["w_irsgis","m_gis"],["w_irsgis","m_rs"],
+ ["pr_citsci","m_part"],["pr_citsci","o_youth"],["pr_citsci","p_home","in Manikganj"],["pr_citsci","l_people"],["tawhid","o_bbb"],["tawhid","o_youth"],["tawhid","e_phd","prospectus guidance"],
+ ["o_bbb","r_dgi","digital × disaster"],["o_bbb","w_irsgis"],["pr_carbon","m_gis"],
+ ["w_icccad","pr_nbs"],["w_icccad","pr_climserv"],["w_icccad","pr_climfin"],["w_icccad","pr_walk"],["w_icccad","l_people"],["w_icccad","o_tribune"],["w_icccad","m_qual"],
+ ["pr_climserv","o_climed"],["pr_walk","m_writing","translation"],["o_coastal","e_ju"],["o_tribune","m_writing"],
+ ["w_waterkeepers","pr_dhakaenv"],["w_waterkeepers","l_people"],["pr_dhakaenv","m_part"],["pr_dhakaenv","m_qual"],
+ ["w_cipr","pr_unicef"],["pr_unicef","m_gis","GPS field mapping"],["pr_unicef","o_rangpur","Rangpur again"],["o_rangpur","m_gis"],
+ ["e_buet","l_climate"],["e_buet","r_cmip6"],["saiful","e_buet","supervisor"],["saiful","r_cmip6"],["saiful","o_agu"],
+ ["r_cmip6","m_climate"],["r_cmip6","m_ml"],["r_cmip6","o_agu"],["r_cmip6","m_gis","spatial predictors"],
+ ["w_esri","l_infra"],["w_esri","pr_penang"],["w_esri","pr_sesb"],["w_esri","pr_jupem"],["w_esri","pr_rajuk"],["w_esri","pr_bfd"],["w_esri","pr_mbpphist"],["w_esri","pr_caab"],["w_esri","pr_trees"],
+ ["pr_penang","m_twin"],["pr_penang","m_ent"],["pr_rajuk","m_twin"],["pr_jupem","m_ml"],["pr_sesb","m_ent"],["pr_sesb","m_code","ETL"],["pr_mbpphist","m_gis"],["pr_caab","m_ent"],["pr_bfd","m_ent"],["pr_trees","m_ent"],
+ ["w_esri","o_gisday"],["o_gisday","l_infra"],
+ ["pr_storymap","m_writing"],["pr_storymap","m_gis"],["pr_lifemap","pr_storymap","successor"],["pr_lifemap","pr_chorascape"],["pr_chorascape","m_writing"],["pr_chorascape","l_story"],
+ ["pr_election","pr_chorascape"],["pr_election","m_code"],["pr_football","pr_chorascape"],["pr_football","m_writing"],["pr_election","l_critique","political lens"],
+ ["w_youthmappers","e_ju"],["w_youthmappers","m_part"],["w_youthmappers","pr_citsci","research project"],["w_youthmappers","m_gis"],
+ ["w_soas","m_qual","transcription"],["w_soas","m_writing","translation"],["w_soas","e_ju"],
+ ["pr_scifair","e_secondary"],["pr_scifair","l_story"],
+ ["pr_fieldwork","e_ju"],["pr_fieldwork","r_dhaleshwari","its source, Tangail"],["pr_fieldwork","l_field"],["pr_fieldwork","pr_unicef","health-system tours"],["pr_fieldwork","w_icccad","Satkhira coast"],["pr_fieldwork","m_qual"],
+ ["pr_walkriver","tawhid","led by"],["pr_walkriver","r_oxbow","dissertation idea"],["pr_walkriver","l_field"],
+ ["pr_craftmaps","m_gis"],["pr_craftmaps","l_story"],["pr_craftmaps","l_river","another oxbow"],["pr_craftmaps","w_esri"],
+ ["o_oped","m_writing"],["o_oped","l_critique"],["o_oped","pr_dhakaenv","air & landfills"],
+ ["o_usm","nurul"],["o_usm","m_rs"],["o_usm","w_irsgis"],
+ ["g_gis","w_irsgis"],["g_gis","e_ju"],["g_gis","m_gis"],["g_gis","o_youth","co-authors"],["g_gis","pr_citsci"],
+ ["g_icccad","w_icccad"],["g_icccad","o_climed","co-authors"],["g_icccad","pr_nbs"],["saleemul","w_icccad","founding director"],
+ ["hadi","w_esri","country manager"],["hadi","w_irsgis","first met here"],["g_esri","w_esri","guides"],["g_esri","m_ent"],
+ ["g_unifriends","e_ju"],["g_schoolfriends","e_secondary"],["g_schoolfriends","pr_blog","team projects"],["g_schoolfriends","l_story"],["g_schoolfriends","p_teen"],
+ ["p_social","g_fbfriends"],["g_fbfriends","l_critique","shaped thinking"],["p_social","r_dgi","origin of the idea"],["p_social","pr_craftmaps","shared on"],["p_social","o_oped"],["p_social","pr_blog","first blog"],
+ ["o_daffodil","w_esri","as industry expert"],["o_daffodil","m_twin"],["o_daffodil","pr_penang"],
+ ["pr_grant","w_youthmappers","won under his presidency"],["pr_grant","pr_seminars","funded"],["pr_grant","pr_fossconf","funded"],["pr_seminars","e_ju"],["pr_seminars","w_youthmappers"],["pr_fossconf","w_youthmappers","led organising team"],["pr_fossconf","w_irsgis"],["pr_fossconf","m_code","open-source GIS"],["pr_seminars","l_people","communicating GIS"],
+ ["p_thailand","pr_carbon","project visit"],["g_unifriends","p_thailand","travelled together"],["joyashree","pr_carbon","guided"],["joyashree","p_thailand","AIT"],["p_thailand","w_irsgis","IRSGIS project"],
+ ["r_dgi","m_graph"],["e_phd","r_dgi","carries"],
+ ["m_qual","l_quant"],["m_gis","l_quant"],["m_part","l_people"],["m_ent","l_infra"],["m_twin","l_infra"],["m_ml","l_climate"],["m_climate","l_climate"],["m_writing","l_story"],["m_rs","l_river"],["m_code","m_graph"],["m_ent","m_graph"],
+ ["l_move","core"],["l_story","core"],["l_field","core"],["l_critique","core"],["l_quant","core"],["l_people","core"],["l_river","core"],["l_climate","core"],["l_infra","core"],["l_culture","core"],
+ ["r_dgi","core","becomes"],["m_graph","core","method"],["e_phd","core","next"]
+];
+
+const STRANDS = [
+ {name:"The river",blurb:"Dhaleshwari floods, the Kaliganga at home, a dissertation on its oxbow lake, then flood risk in Manikganj and Rangpur.",ids:["p_maternal","r_dhaleshwari","p_home","r_kaliganga","r_oxbow","shamsul","nurul","l_river","pr_citsci","o_youth","o_rangpur","o_lulc","o_aga","m_rs","pr_walkriver","o_usm","g_gis"]},
+ {name:"Learning to see spatially",blurb:"A highway watched from a study desk, field tours in 50+ districts, and IRSGIS turning curiosity into method.",ids:["p_teen","l_move","e_ju","l_field","pr_fieldwork","w_irsgis","tawhid","l_quant","m_gis","m_qual"]},
+ {name:"Science with people",blurb:"Climate science at ICCCAD, pollution activism at Waterkeepers, young citizen scientists and health-service mapping.",ids:["w_icccad","w_waterkeepers","pr_dhakaenv","pr_climserv","pr_nbs","pr_climfin","o_climed","l_people","m_part","pr_citsci","w_cipr","pr_unicef","w_youthmappers","nurul","g_icccad","saleemul","pr_seminars","pr_fossconf","pr_grant"]},
+ {name:"Geography inside climate models",blurb:"Machine learning on wetlands, then spatial predictors for CMIP6 downscaling at BUET and AGU.",ids:["m_ml","m_climate","e_buet","r_cmip6","saiful","o_agu","l_climate","o_lulc","pr_jupem"]},
+ {name:"GIS as infrastructure",blurb:"Digital twins, ETL and enterprise systems for Penang, Sabah, RAJUK and CAAB; ICT in disaster recovery before that.",ids:["w_esri","hadi","g_esri","o_daffodil","pr_penang","pr_rajuk","pr_sesb","pr_caab","pr_bfd","pr_trees","pr_mbpphist","m_ent","m_twin","l_infra","o_gisday","o_bbb"]},
+ {name:"Stories and critique",blurb:"School friends and a first blog, op-eds, Facebook conversations, critique at JU, a first critic at home, craft maps and Chorascape.",ids:["e_secondary","pr_blog","m_writing","l_story","ansari","l_critique","pr_storymap","pr_lifemap","pr_chorascape","pr_election","pr_football","o_tribune","pr_walk","o_oped","pr_craftmaps","w_soas","pr_scifair","g_schoolfriends","p_social","g_fbfriends","wife"]},
+ {name:"Many homes, many geographies",blurb:"Maternal and paternal villages on one floodplain, school and university friends, and a second landscape in the piedmont through marriage.",ids:["p_birth","p_paternal","p_maternal","r_dhaleshwari","p_inlaws","wife","l_culture","p_uttar","g_schoolfriends","g_unifriends","p_thailand"]}
+];
+const CORESET = ["core","r_dgi","m_graph","e_phd"];
+// Position scores: [technical(-1) … interpretive(+1), physical(-1) … social(+1)]. An approximate reading.
+const AX={p_birth:[0,.3],p_maternal:[.3,0],p_paternal:[.5,.4],r_dhaleshwari:[.1,-.8],p_uttar:[.6,.7],p_teen:[.1,.5],p_home:[.3,-.2],r_kaliganga:[.2,-.7],p_inlaws:[.6,.5],
+e_primary:[.4,.5],e_secondary:[.6,.6],e_hsc:[.5,.8],e_ju:[.2,.1],e_buet:[-.6,-.7],e_phd:[.4,.4],
+w_irsgis:[-.5,-.2],w_icccad:[.2,.3],w_cipr:[-.2,.7],w_waterkeepers:[.2,-.1],w_esri:[-.9,.2],w_soas:[.6,.6],w_youthmappers:[-.3,.4],
+tawhid:[0,0],nurul:[-.3,-.8],shamsul:[-.2,-.9],ansari:[.9,.8],saiful:[-.8,-.8],wife:[.5,.3],o_daffodil:[-.7,.4],pr_seminars:[0,.6],pr_fossconf:[-.4,.5],pr_grant:[-.2,.5],p_thailand:[0,.2],joyashree:[-.2,.1],g_gis:[-.6,0],g_icccad:[.2,.3],saleemul:[.3,.2],hadi:[-.7,.3],g_esri:[-.8,.3],g_unifriends:[.4,.7],g_schoolfriends:[.6,.8],g_fbfriends:[.8,.8],p_social:[.6,.8],
+pr_blog:[.7,.5],pr_scifair:[-.2,-.3],pr_citsci:[-.1,.4],pr_carbon:[-.5,-.3],pr_unicef:[-.3,.8],pr_nbs:[.1,-.4],pr_climserv:[-.2,0],pr_climfin:[.2,.6],pr_walk:[.8,.5],pr_dhakaenv:[.3,0],
+pr_penang:[-.8,.3],pr_mbpphist:[-.4,.5],pr_sesb:[-.9,.1],pr_jupem:[-1,-.3],pr_rajuk:[-.8,.4],pr_bfd:[-.7,-.1],pr_caab:[-.8,.3],pr_trees:[-.6,-.3],
+pr_storymap:[.3,.3],pr_lifemap:[.6,.6],pr_chorascape:[.8,.5],pr_election:[.5,.9],pr_football:[.6,.8],pr_fieldwork:[.3,.2],pr_walkriver:[.4,-.3],pr_craftmaps:[.4,.3],
+r_oxbow:[.3,-.2],r_cmip6:[-.9,-.9],r_dgi:[.8,.7],o_coastal:[-.2,-.6],o_bbb:[0,.5],o_tribune:[.5,.3],o_aga:[.4,0],o_youth:[.1,.4],o_climed:[.1,.2],o_lulc:[-.7,-.6],o_rangpur:[-.5,0],o_agu:[-.9,-.9],o_gisday:[-.5,.4],o_oped:[.7,.4],o_usm:[-.7,-.6],
+m_gis:[-.6,-.1],m_rs:[-.8,-.7],m_part:[.2,.6],m_qual:[.7,.6],m_code:[-.9,0],m_ml:[-.9,-.5],m_climate:[-.8,-.9],m_ent:[-.9,.3],m_twin:[-.9,.3],m_writing:[.9,.5],m_graph:[-.3,.4],
+l_move:[.2,.6],l_story:[.8,.5],l_field:[.3,0],l_critique:[.9,.8],l_quant:[-.2,.2],l_people:[.3,.6],l_river:[.4,-.4],l_climate:[-.6,-.7],l_infra:[-.6,.4],l_culture:[.6,.6]};
+const ERAS=[["Childhood & school",1998,2016],["Jahangirnagar years",2017,2022],["BUET & Esri",2023,2025],["Now",2026,2027]];
+function centroid(f){ const s=N.filter(n=>n.type!=="core"&&AX[n.id]&&f(n)); return [d3.mean(s,n=>AX[n.id][0]), d3.mean(s,n=>AX[n.id][1]), s.length]; }
+const ERA_C = ERAS.map(([nm,a,b])=>({nm, c:centroid(n=>n.yr>=a&&n.yr<=b)}));
+const ALL_C = centroid(()=>true);
+N.forEach(n=>{ if(!AX[n.id] && n.id!=="core") console.warn("no AX",n.id); });
+
+
+// ---------- prepare
+const byId = new Map(N.map(n=>[n.id,n]));
+for (const [oid,nid] of Object.entries(GEOMAP)){
+  const g = GEO[oid], n = byId.get(nid);
+  n.geo = g; n.desc = n.desc || g.d.replace("12 September 1997","12 January 1998"); n.timeline = g.tl.replace("1997","1998");
+  if(nid==="e_hsc") n.geo.t = "Higher Secondary Education";
+}
+const links = E.map(([s,t,rel])=>({source:s,target:t,rel:rel||""}));
+links.forEach(l=>{ if(!byId.has(l.source)||!byId.has(l.target)) console.warn("bad edge",l); });
+const adj = new Map(N.map(n=>[n.id,[]]));
+links.forEach(l=>{adj.get(l.source).push({id:l.target,rel:l.rel,l});adj.get(l.target).push({id:l.source,rel:l.rel,l});});
+N.forEach(n=>{ n.deg = adj.get(n.id).length; n.r = TYPES[n.type].r + (n.type==="core"?0:Math.sqrt(n.deg)*1.1); });
+
+function pathToCore(id){
+  if(id==="core") return ["core"];
+  const prev = new Map([[id,null]]), q=[id];
+  while(q.length){ const c=q.shift(); if(c==="core") break;
+    for(const nb of adj.get(c)) if(!prev.has(nb.id)){ prev.set(nb.id,c); q.push(nb.id); } }
+  if(!prev.has("core")) return [];
+  const p=[]; let c="core"; while(c){p.unshift(c); c=prev.get(c);} return p;
+}
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const colorOf = t => css(TYPES[t].color);
+
+// ---------- svg
+const svg = d3.select("#graph");
+const W = () => svg.node().clientWidth, H = () => svg.node().clientHeight;
+svg.append("defs").append("marker").attr("id","arr").attr("viewBox","0 0 10 10").attr("refX",6).attr("refY",5).attr("markerWidth",7).attr("markerHeight",7).attr("orient","auto-start-reverse").append("path").attr("d","M0,0L10,5L0,10z").attr("fill","var(--accent)");
+const root = svg.append("g");
+const guides = root.append("g").attr("class","guide");
+const linkG = root.append("g"), nodeG = root.append("g");
+const zoom = d3.zoom().scaleExtent([.3,4]).on("zoom", e=>{
+  root.attr("transform", e.transform);
+  svg.classed("zoomed", e.transform.k>1.35);
+});
+svg.call(zoom).on("dblclick.zoom",null);
+
+const linkSel = linkG.selectAll("line").data(links).join("line").attr("class","link");
+const nodeSel = nodeG.selectAll("g").data(N).join("g")
+  .attr("class", d=>`node ${d.type}${MINOR.has(d.type)?" minor":""}`)
+  .attr("tabindex",0).attr("role","button").attr("aria-label",d=>`${TYPES[d.type].label}: ${d.label}`);
+nodeSel.filter(d=>d.geo).append("circle").attr("class","ring").attr("r",d=>d.r+3.5);
+nodeSel.filter(d=>d.members&&d.members.length>1).append("circle").attr("class","grp").attr("r",d=>d.r+3);
+nodeSel.append("circle").attr("class","dot").attr("r",d=>d.r);
+function wrapLabel(s,max){ const w=s.split(" "),out=[];let line="";
+  for(const word of w){ if(line && (line+" "+word).length>max){ out.push(line); line=word; } else line = line? line+" "+word : word; }
+  if(line) out.push(line); return out; }
+nodeSel.append("text").each(function(d){
+  d.lines = wrapLabel(d.label, d.type==="core"?22:20);
+  const tx=d3.select(this), n=d.lines.length;
+  d.lines.forEach((ln,i)=>tx.append("tspan").attr("dy", i===0 ? (d.type==="core"? "0em" : `${0.35-(n-1)*0.55}em`) : "1.1em").text(ln));
+});
+function placeLabels(){
+  const vert=d=>d.side===2||d.side===-2;
+  nodeSel.select("text").attr("text-anchor",d=>d.type==="core"||vert(d)?"middle":(d.side<0?"end":"start"))
+    .attr("y",d=>{ const n=d.lines.length, half=n*5.9;
+      if(d.side===2) return d.r+6+half; if(d.side===-2) return -(d.r+6+half);
+      return d.type==="core"?d.r+18:0; })
+    .each(function(d){ const x = d.type==="core"||vert(d)?0:(d.side<0?-(d.r+5):d.r+4);
+      d3.select(this).attr("x",x).selectAll("tspan").attr("x",x); });
+}
+placeLabels();
+function paint(){ nodeSel.select("circle.dot").attr("fill",d=>colorOf(d.type)); }
+paint();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",paint);
+new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+// ---------- simulation
+let mode="web";
+const sim = d3.forceSimulation(N)
+  .force("link", d3.forceLink(links).id(d=>d.id).distance(l=>{
+     const a=l.source.type,b=l.target.type; return (a==="core"||b==="core")?110:(a==="lesson"||b==="lesson")?70:48; }).strength(.55))
+  .force("charge", d3.forceManyBody().strength(d=>d.type==="core"?-1000:-280))
+  .force("collide", d3.forceCollide(d=>d.r+(d.type==="lesson"?16:d.type==="core"?20:6)))
+  .force("x", d3.forceX(0).strength(.04)).force("y", d3.forceY(0).strength(.04))
+  .on("tick", ticked).stop();
+
+const YEARS=[1998,2027];
+const BANDS=["place","person","edu","work","project","output","method","lesson","core"];
+function applyMode(){
+  guides.selectAll("*").remove(); svg.classed("posmode", mode==="pos");
+  const w=W(), h=H(); const R=Math.min(w,h)*.46;
+  const fl = sim.force("link");
+  N.forEach(d=>{ d.fx = null; d.fy = null; });
+  if(mode==="web"){
+    sim.force("radial",null);
+    sim.force("x",d3.forceX(0).strength(.04)).force("y",d3.forceY(0).strength(.04));
+    fl.strength(.55);
+    byId.get("core").fx=0; byId.get("core").fy=0;
+  } else if(mode==="rings"){
+    sim.force("x",d3.forceX(0).strength(.01)).force("y",d3.forceY(0).strength(.01));
+    sim.force("radial", d3.forceRadial(d=>TYPES[d.type].ring*R*1.05,0,0).strength(1.1));
+    fl.strength(.08);
+    byId.get("core").fx=0; byId.get("core").fy=0;
+    const rings=[[1,"Places & people"],[.8,"Schools & workplaces"],[.62,"Projects & outputs"],[.42,"Methods"],[.27,"Lessons"]];
+    rings.forEach(([k,t])=>{ guides.append("circle").attr("class","ringline").attr("r",k*R*1.05);
+      guides.append("text").attr("class","bandlab").attr("x",0).attr("y",-k*R*1.05-6).attr("text-anchor","middle").text(t); });
+  } else if(mode==="pos"){
+    sim.force("radial",null);
+    const sx=w*.40, sy=h*.37;
+    const px=d=> d.id==="core"? ALL_C[0]*sx : AX[d.id][0]*sx, py=d=> d.id==="core"? -ALL_C[1]*sy : -AX[d.id][1]*sy;
+    sim.force("x",d3.forceX(px).strength(.7)).force("y",d3.forceY(py).strength(.7));
+    fl.strength(.01);
+    const c=byId.get("core"); c.fx=ALL_C[0]*sx; c.fy=-ALL_C[1]*sy;
+    guides.append("line").attr("class","ringline").attr("x1",-sx*1.08).attr("x2",sx*1.08).attr("y1",0).attr("y2",0);
+    guides.append("line").attr("class","ringline").attr("y1",-sy*1.1).attr("y2",sy*1.1).attr("x1",0).attr("x2",0);
+    [["← Technical / computational",-sx*1.08,-6,"start"],["Interpretive / critical →",sx*1.08,-6,"end"],["Social & human ↑",6,-sy*1.1,"start"],["Physical & environmental ↓",6,sy*1.1+10,"start"]]
+      .forEach(([tx,x,y,a])=>guides.append("text").attr("class","bandlab").attr("x",x).attr("y",y).attr("text-anchor",a).text(tx));
+    const pts=ERA_C.map(e=>[e.c[0]*sx,-e.c[1]*sy]);
+    guides.append("path").attr("d",d3.line().curve(d3.curveCatmullRom)(pts)).attr("fill","none").attr("stroke",css("--accent")).attr("stroke-width",2.5).attr("stroke-dasharray","6 4").attr("marker-end","url(#arr)");
+    ERA_C.forEach((e,i)=>{ const g2=guides.append("g").attr("transform",`translate(${pts[i][0]},${pts[i][1]})`);
+      g2.append("rect").attr("x",-5).attr("y",-5).attr("width",10).attr("height",10).attr("transform","rotate(45)").attr("fill",css("--accent"));
+      g2.append("text").attr("class","bandlab").attr("x",9).attr("y",i%2?14:-8).style("fill",css("--ink")).text(`${i+1} · ${e.nm}`); });
+  } else {
+    sim.force("radial",null);
+    const xs=d3.scaleLinear().domain(YEARS).range([-w*.42, w*.40]);
+    const ys=d3.scalePoint().domain(BANDS).range([-h*.36, h*.38]);
+    sim.force("x",d3.forceX(d=>xs(d.yr)).strength(.9)).force("y",d3.forceY(d=>ys(d.type)).strength(.5));
+    fl.strength(.02);
+    BANDS.forEach(b=>guides.append("text").attr("class","bandlab").attr("x",-w*.42-14).attr("y",ys(b)+3).attr("text-anchor","end").text(TYPES[b].label));
+    for(let yr=1998; yr<=2028; yr+=5){ const x=xs(yr);
+      guides.append("line").attr("class","ringline").attr("x1",x).attr("x2",x).attr("y1",-h*.42).attr("y2",h*.43);
+      guides.append("text").attr("class","yearlab").attr("x",x).attr("y",-h*.42-6).attr("text-anchor","middle").text(yr); }
+  }
+}
+function ticked(){
+  linkSel.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+  nodeSel.attr("transform",d=>`translate(${d.x},${d.y})`);
+}
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function settle(first){
+  applyMode();
+  if(reduce || first){ sim.alpha(1); for(let i=0;i<320;i++) sim.tick(); ticked(); if(!reduce) sim.alpha(.05).restart(); }
+  else sim.alpha(.9).restart();
+}
+function fit(dur=0){
+  const w=W(),h=H(), vis=N.filter(n=>!hiddenTypes.has(n.type));
+  const [x0,x1]=d3.extent(vis,d=>d.x), [y0,y1]=d3.extent(vis,d=>d.y);
+  const pad = mode==="time"||mode==="pos"?110:70;
+  const k=Math.min(2, .95*Math.min(w/(x1-x0+pad*2), (h-50)/(y1-y0+pad*2)));
+  const t=d3.zoomIdentity.translate(w/2-k*(x0+x1)/2, (h+40)/2-k*(y0+y1)/2).scale(k);
+  (dur&&!reduce? svg.transition().duration(dur):svg).call(zoom.transform,t);
+}
+
+// drag
+nodeSel.call(d3.drag()
+  .on("start",(e,d)=>{ if(!e.active&&!reduce) sim.alphaTarget(.2).restart(); d.fx=d.x; d.fy=d.y; })
+  .on("drag",(e,d)=>{ d.fx=e.x; d.fy=e.y; if(reduce) ticked(); })
+  .on("end",(e,d)=>{ if(!e.active) sim.alphaTarget(0); if(d._focus){ d._pfx=null; d._pfy=null; } else if(d.id!=="core"||mode==="time"){ d.fx=null; d.fy=null; } else if(mode==="pos"){ /* keep core fixed */ } }));
+
+// ---------- highlighting
+let selected=null, strandIdx=null;
+function clearHL(){ nodeSel.classed("dim",false).classed("hi",false).classed("sel",false); linkSel.classed("dim",false).classed("hi",false).classed("path",false); }
+function highlightNode(id){
+  clearHL();
+  const nb=new Set([id, ...adj.get(id).map(x=>x.id)]);
+  const p=pathToCore(id), pe=new Set(); for(let i=0;i<p.length-1;i++) pe.add(p[i]+"|"+p[i+1]);
+  const ps=new Set(p);
+  nodeSel.classed("dim",d=>!nb.has(d.id)&&!ps.has(d.id)).classed("hi",d=>nb.has(d.id)||ps.has(d.id)).classed("sel",d=>d.id===id);
+  linkSel.classed("dim",l=>!(l.source.id===id||l.target.id===id) && !pe.has(l.source.id+"|"+l.target.id) && !pe.has(l.target.id+"|"+l.source.id))
+    .classed("hi",l=>l.source.id===id||l.target.id===id)
+    .classed("path",l=>pe.has(l.source.id+"|"+l.target.id)||pe.has(l.target.id+"|"+l.source.id));
+  return p;
+}
+function highlightStrand(i){
+  clearHL();
+  const s=new Set([...STRANDS[i].ids,...CORESET]);
+  // include the lesson→core edges and strand-internal edges
+  nodeSel.classed("dim",d=>!s.has(d.id)).classed("hi",d=>s.has(d.id));
+  linkSel.classed("dim",l=>!(s.has(l.source.id)&&s.has(l.target.id)))
+    .classed("path",l=>s.has(l.source.id)&&s.has(l.target.id)&&(l.target.id==="core"||l.source.id==="core"))
+    .classed("hi",l=>s.has(l.source.id)&&s.has(l.target.id));
+}
+
+// ---------- panel
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const overview=document.getElementById("overview"), detail=document.getElementById("detail");
+function nodeBtn(id,rel){ const n=byId.get(id);
+  return `<button class="link-btn" data-go="${id}"><i style="background:${colorOf(n.type)}"></i><span>${esc(n.label)}</span>${rel?`<span class="rel">${esc(rel)}</span>`:""}</button>`; }
+// ---------- focus layout: spread a node's neighbours evenly around it
+let focusId=null, focusTimer=null;
+function releaseFocus(){
+  if(focusTimer){ focusTimer.stop(); focusTimer=null; }
+  if(!focusId) return;
+  N.forEach(n=>{ if(n._focus||n._moved){ n.fx = n._pfx; n.fy = n._pfy; delete n._focus; delete n._moved; } n.side=0; });
+  sim.force("clear",null); focusId=null; placeLabels(); svg.classed("focusing",false);
+  if(!reduce) sim.alpha(.35).restart(); else { for(let i=0;i<120;i++) sim.tick(); ticked(); }
+}
+function focusOn(id){
+  releaseFocus(); focusId=id;
+  const c=byId.get(id), nbs=[...new Set(adj.get(id).map(x=>x.id))].map(i=>byId.get(i)).filter(n=>!hiddenTypes.has(n.type));
+  const k=nbs.length; if(!k) return;
+  // two facing arcs: left and right columns spaced by label height, so no label can touch another
+  const byX=nbs.slice().sort((a,b)=>a.x-b.x), half=Math.ceil(k/2);
+  const cols=[byX.slice(0,Math.floor(k/2)), byX.slice(Math.floor(k/2))];
+  const hOf=n=>n.lines.length*12.5+12;
+  const stackH=Math.max(...cols.map(col=>col.reduce((s,n)=>s+hOf(n),0)));
+  const Ry=Math.max(110, stackH/2), Rx=Math.max(170, Ry*0.95);
+  const targets=new Map();
+  cols.forEach((col,ci)=>{
+    const dir= ci===0?-1:1; col.sort((a,b)=>a.y-b.y);
+    const tot=col.reduce((s,n)=>s+hOf(n),0); let y=c.y-tot/2;
+    col.forEach(n=>{ const h=hOf(n), cy=y+h/2; y+=h;
+      const ry=Math.min(1,Math.abs(cy-c.y)/(Ry+20));
+      const x=c.x+dir*(Rx*0.4+Rx*0.6*Math.sqrt(1-ry*ry));
+      targets.set(n.id,[x,cy,dir]); });
+  });
+  const R0=Math.max(Rx,Ry);
+  [c,...nbs].forEach(n=>{ n._focus=true; n._pfx=n.fx; n._pfy=n.fy; });
+  c.fx=c.x; c.fy=c.y;
+  const start=new Map(nbs.map(n=>[n.id,[n.x,n.y]]));
+  nbs.forEach(n=>{ n.side=targets.get(n.id)[2]; }); c.side=0; placeLabels();
+  // push everything else outside the ring; pinned nodes (the core) are moved too
+  const clearR=R0+170;
+  N.forEach(n=>{ if(n._focus||n.fx==null) return; const dx=n.x-c.x, dy=n.y-c.y, d=Math.hypot(dx,dy)||1;
+    if(d<clearR+n.r){ n._moved=true; n._pfx=n.fx; n._pfy=n.fy; n.fx=c.x+dx/d*(clearR+n.r+20); n.fy=c.y+dy/d*(clearR+n.r+20); } });
+  sim.force("clear", alpha=>{ for(const n of N){ if(n._focus) continue; const dx=n.x-c.x, dy=n.y-c.y, d=Math.hypot(dx,dy)||1;
+      if(d<clearR){ const f=(clearR-d)/d*0.5*Math.max(alpha,.3); n.vx+=dx*f; n.vy+=dy*f; } } });
+  svg.classed("focusing",true);
+  const ease=d3.easeCubicOut, dur=reduce?0:550;
+  const step=tt=>{ nbs.forEach(n=>{ const [sx,sy]=start.get(n.id),[tx,ty]=targets.get(n.id); n.fx=sx+(tx-sx)*tt; n.fy=sy+(ty-sy)*tt; }); };
+  if(dur===0){ step(1); for(let i=0;i<150;i++) sim.tick(); ticked(); zoomTo(c,clearR,focusPts(c,targets)); return; }
+  sim.alpha(.6).restart();
+  focusTimer=d3.timer(el=>{ const tt=ease(Math.min(1,el/dur)); step(tt); if(el>=dur){ focusTimer.stop(); focusTimer=null; } });
+  zoomTo(c,clearR,focusPts(c,targets));
+}
+function focusPts(c,targets){ const p=[[c.x,c.y],...targets.values()]; const core=byId.get("core"); if(core.fx!=null&&core.id!==c.id) p.push([core.fx,core.fy+40]); return p; }
+function zoomTo(c,r,pts){
+  const w=W(),h=H(); let x0=c.x-r,x1=c.x+r,y0=c.y-r,y1=c.y+r;
+  if(pts){ const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]); x0=Math.min(...xs)-150; x1=Math.max(...xs)+150; y0=Math.min(...ys)-40; y1=Math.max(...ys)+50; }
+  const k=Math.max(.45,Math.min(1.8, Math.min(w/(x1-x0),(h-60)/(y1-y0))));
+  const t=d3.zoomIdentity.translate(w/2-k*(x0+x1)/2,(h+40)/2-k*(y0+y1)/2).scale(k);
+  (reduce?svg:svg.transition().duration(600)).call(zoom.transform,t);
+}
+function showDetail(id){
+  const n=byId.get(id); selected=id; strandIdx=null; updateStrandBtns();
+  const p=highlightNode(id);
+  if(focusId!==id) focusOn(id);
+  const when = n.whenTxt || ((n.timeline && !n.cv) ? n.timeline : (n.end&&n.end!==n.yr? `${n.yr} – ${n.end===2026&&(n.type==="work")?"present":n.end}` : (n.type==="lesson"||n.type==="method"? `from ${n.yr}`: n.yr)));
+  const paras = (n.desc||"").split(/\n\n+/).map(t=>`<p>${esc(t)}</p>`).join("");
+  const conns = adj.get(id).slice().sort((a,b)=>BANDS.indexOf(byId.get(a.id).type)-BANDS.indexOf(byId.get(b.id).type)).map(x=>nodeBtn(x.id,x.rel)).join("");
+  const pathHtml = p.length>1 ? p.map(pid=> pid===id?`<b>${esc(n.label)}</b>`: `<button class="link-btn" data-go="${pid}">${esc(byId.get(pid).label)}</button>`).join('<span class="arrow">→</span>') : "";
+  detail.innerHTML = `
+    <button class="back" id="back">← All strands</button>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span class="tag"><i style="background:${colorOf(n.type)}"></i>${n.members&&n.members.length>1?"Group of people":TYPES[n.type].label}</span>
+      <h2>${esc(n.geo? n.geo.t.replace("Hiigher","Higher") : n.label)}</h2>
+      ${n.type==="core"?"":`<span class="when">${esc(when)}</span>`}
+    </div>
+    ${n.members?`<div><h3>${n.members.length>1?"People in this group":"Person"}</h3><ul class="members">${n.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
+    <div class="body">${paras}</div>
+    ${n.cv?`<div class="cv">${n.cv}</div>`:""}
+    ${n.geo?`<div class="mapped">Life-map chapter ${n.geo.o} of 16 · ${n.geo.c[1].toFixed(4)}°N, ${n.geo.c[0].toFixed(4)}°E</div>`:""}
+    ${pathHtml?`<div><h3>Route to the core</h3><div class="path">${pathHtml}</div></div>`:""}
+    <div><h3>Connected to · ${n.deg}</h3><div class="conn">${conns}</div></div>`;
+  overview.classList.add("off"); detail.classList.add("on");
+  document.getElementById("panel").scrollTop=0;
+}
+function showOverview(){ releaseFocus(); selected=null; detail.classList.remove("on"); overview.classList.remove("off");
+  if(strandIdx===null) clearHL(); else highlightStrand(strandIdx); }
+detail.addEventListener("click",e=>{
+  const go=e.target.closest("[data-go]"); if(go){ showDetail(go.dataset.go); return; }
+  if(e.target.closest("#back")) { strandIdx=null; updateStrandBtns(); showOverview(); }
+});
+nodeSel.on("click",(e,d)=>{ e.stopPropagation(); showDetail(d.id); })
+  .on("keydown",(e,d)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); showDetail(d.id);} })
+  .on("mouseenter",(e,d)=>{ if(!selected&&strandIdx===null){ highlightNode(d.id); } showTip(e,d); })
+  .on("mousemove",(e,d)=>showTip(e,d))
+  .on("mouseleave",()=>{ tip.style.display="none"; if(!selected&&strandIdx===null) clearHL(); });
+const tip=document.getElementById("tip");
+function showTip(e,d){
+  const box=document.querySelector("main").getBoundingClientRect();
+  tip.innerHTML=`<span class="k">${d.members&&d.members.length>1?"Group of people":TYPES[d.type].label}</span><b>${esc(d.label)}</b>`+(d.members?`<ul>${d.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`:"");
+  tip.style.display="block";
+  let x=e.clientX-box.left+14, y=e.clientY-box.top+14;
+  if(x+270>box.width) x-=290; tip.style.left=x+"px"; tip.style.top=y+"px";
+}
+svg.on("click",()=>{ if(selected){ showOverview(); } });
+
+// strands
+const strandsEl=document.getElementById("strands");
+strandsEl.innerHTML = STRANDS.map((s,i)=>`<button class="strand" data-i="${i}" aria-pressed="false"><span class="num">0${i+1}</span><span class="nm">${esc(s.name)}</span><span class="bl">${esc(s.blurb)}</span></button>`).join("");
+function updateStrandBtns(){ strandsEl.querySelectorAll(".strand").forEach(b=>b.setAttribute("aria-pressed", String(+b.dataset.i===strandIdx))); }
+strandsEl.addEventListener("click",e=>{ const b=e.target.closest(".strand"); if(!b) return;
+  const i=+b.dataset.i; strandIdx = strandIdx===i?null:i; updateStrandBtns();
+  if(strandIdx===null) clearHL(); else highlightStrand(i); });
+
+// legend
+const hiddenTypes=new Set();
+const legendEl=document.getElementById("legend");
+function drawLegend(){ legendEl.innerHTML = BANDS.map(t=>`<button class="chip" data-t="${t}" aria-pressed="${!hiddenTypes.has(t)}"><i style="background:${t==="lesson"?"transparent":colorOf(t)};${t==="lesson"?"border:1.5px solid "+colorOf(t):""}"></i>${TYPES[t].label}</button>`).join(""); }
+drawLegend();
+legendEl.addEventListener("click",e=>{ const c=e.target.closest(".chip"); if(!c||c.dataset.t==="core") return;
+  const t=c.dataset.t; hiddenTypes.has(t)?hiddenTypes.delete(t):hiddenTypes.add(t);
+  c.setAttribute("aria-pressed", String(!hiddenTypes.has(t)));
+  nodeSel.classed("hidden",d=>hiddenTypes.has(d.type));
+  linkSel.classed("hidden",l=>hiddenTypes.has(l.source.type)||hiddenTypes.has(l.target.type)); });
+
+// modes
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{
+  mode=b.dataset.mode; document.querySelectorAll("[data-mode]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  document.getElementById("hint").textContent = mode==="rings"?"Outer ring: where it happened · centre: what it adds up to": mode==="time"?"Left to right: 1998 → 2027": mode==="pos"?"Gold diamonds: centre of gravity in each period · approximate reading":"Hover for names · scroll to zoom · drag to pan";
+  releaseFocus(); settle(true); fit(500);
+  if(selected){ const s=selected; selected=null; showDetail(s); }
+}));
+document.getElementById("reset").addEventListener("click",()=>{ strandIdx=null; updateStrandBtns(); showOverview(); fit(400); });
+
+// assessment numbers
+(function(){
+  const hubs=N.filter(n=>n.type!=="core").sort((a,b)=>b.deg-a.deg).slice(0,4);
+  document.getElementById("a-hubs").textContent = "The biggest hubs after the centre are "+hubs.map(h=>`${h.label} (${h.deg} links)`).join(", ")+".";
+  const riverOut=STRANDS[0].ids.filter(i=>byId.get(i).type==="output").length;
+  const eraN=ERAS.map(([nm,a,b])=>[nm,N.filter(n=>n.type!=="core"&&n.yr>=a&&n.yr<=b).length]).sort((x,y)=>y[1]-x[1])[0];
+  document.getElementById("a-era").textContent=`The ${eraN[0]} are the densest stretch, with ${eraN[1]} nodes.`;
+  document.getElementById("a-river").textContent = riverOut+" outputs";
+  document.getElementById("a-esri").textContent = adj.get("w_esri").filter(x=>byId.get(x.id).type==="project"&&x.id!=="pr_craftmaps").length;
+  const f=v=>(v>0?"interpretive":"technical")+" "+Math.abs(v).toFixed(2), g=v=>(v>0?"social":"physical")+" "+Math.abs(v).toFixed(2);
+  const e=ERA_C;
+  document.getElementById("a-drift").textContent = `On the Position view, the centre of gravity starts on the social, interpretive side in childhood and school (${f(e[0].c[0])}, ${g(e[0].c[1])}), drifts to the middle in the Jahangirnagar years (${f(e[1].c[0])}, ${g(e[1].c[1])}), and swings furthest toward the technical side in the BUET and Esri years (${f(e[2].c[0])}, ${g(e[2].c[1])}). Now it sits ${Math.abs(e[3].c[0])<.15?"near the middle of the technical–interpretive axis":"on the "+(e[3].c[0]<0?"technical":"interpretive")+" side"} and ${e[3].c[1]>Math.max(e[0].c[1],e[1].c[1],e[2].c[1])?"further toward the social side than in any earlier period":"back toward the social side, close to where it began"} (${f(e[3].c[0])}, ${g(e[3].c[1])}), carried by Choroscape, the atlases and the prospectus. Overall: a technically deep geographer whose critical voice is so far mostly in essays.`;
+})();
+settle(true); fit();
+window.addEventListener("resize",()=>{ settle(true); fit(); });
+</script>
+</body>
+</html>
