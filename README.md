@@ -2,7 +2,7 @@
 
 An interactive knowledge graph of my life in geography: the places, schools, workplaces, people, projects, methods and lessons that shaped how I read the world spatially.
 
-**Live site:** https://shuvo-srs.github.io/shuvos-geographies/
+**Live site:** https://shuvo.choroscape.com (also https://shuvo-srs.github.io/shuvos-geographies/)
 
 ## What it shows
 
