@@ -211,7 +211,8 @@ const N = [
  {id:"e_primary",type:"edu",label:"Experimental School, PTI",yr:2004,end:2008},
  {id:"e_secondary",type:"edu",label:"Secondary school",yr:2009,end:2014},
  {id:"e_hsc",type:"edu",label:"Higher secondary college",yr:2014,end:2016},
- {id:"e_ju",type:"edu",label:"BSc Geography & Environment, JU",yr:2017,end:2022,cv:"<b>B.Sc. (Hons) Geography and Environment</b>, Jahangirnagar University · CGPA 3.54/4.00 · merit scholarship (top 5%)."},
+ {id:"e_ju",type:"edu",label:"BSc · Geography & Environment",yr:2017,end:2022,cv:"<b>B.Sc. (Hons) Geography and Environment</b>, Jahangirnagar University · CGPA 3.54/4.00 · merit scholarship (top 5%)."},
+ {id:"u_ju",type:"place",label:"Jahangirnagar University",yr:2017,desc:"The Savar campus that held most of his twenties: the Department of Geography and Environment where he did his BSc, the Institute of Remote Sensing and GIS where he learned research, the YouthMappers chapter he led, and the friends, peers from other departments and the partner he met there. The campus itself became a study site in the carbon footprint project."},
  {id:"e_buet",type:"edu",label:"MSc Climate Modelling, IWFM–BUET",yr:2023,end:2026,cv:"<b>M.Sc. Climate Modelling and Risk Management</b> (part-time), Institute of Water and Flood Management, BUET · 2023–2026."},
  {id:"e_phd",type:"edu",label:"PhD aspiration",yr:2027,desc:"The next step he is working toward: doctoral research on the diluted geographical imagination. People once formed a sense of their own place from what they saw directly and from institutional pictures of it. Now vernacular digital media carry other places, with their own authority, into everyday feeds, and those pictures press on how people imagine where they live and what they should do there. The aim is to trace that dilution across scales, with crises such as floods, energy or water as cases, critical geography to ask whose picture counts, and a spatial knowledge graph to follow how it travels."},
  // ---- work
@@ -317,14 +318,14 @@ const N = [
 
 const E = [
  ["p_birth","p_maternal","grew up in"],["p_maternal","r_dhaleshwari","floodplain of"],["p_paternal","p_maternal","same landscape"],
- ["p_maternal","l_culture"],["p_paternal","l_culture"],["p_inlaws","l_culture"],["wife","p_inlaws","her home"],["wife","e_ju","met at"],["wife","l_critique","critic of every work"],["wife","pr_craftmaps"],
+ ["p_maternal","l_culture"],["p_paternal","l_culture"],["p_inlaws","l_culture"],["wife","p_inlaws","her home"],["wife","u_ju","met at"],["wife","l_critique","critic of every work"],["wife","pr_craftmaps"],
  ["p_uttar","e_primary","neighbourhood"],["p_birth","p_uttar"],["e_primary","e_secondary"],["p_teen","e_secondary","near school"],["p_teen","l_move"],
- ["e_secondary","pr_blog"],["pr_blog","m_writing"],["pr_blog","m_code","first HTML"],["pr_blog","l_story"],["e_secondary","e_hsc"],["e_hsc","e_ju","admission season"],
+ ["e_secondary","pr_blog"],["pr_blog","m_writing"],["pr_blog","m_code","first HTML"],["pr_blog","l_story"],["e_secondary","e_hsc"],["e_hsc","u_ju","admission season"],
  ["e_hsc","p_home"],["p_home","r_kaliganga","beside"],["r_kaliganga","r_oxbow","studied"],["r_oxbow","l_river"],["e_ju","r_oxbow","dissertation"],
  ["r_oxbow","o_lulc"],["r_oxbow","o_aga"],["r_oxbow","m_qual"],["o_lulc","m_rs"],["o_lulc","m_ml"],["shamsul","r_oxbow","geomorphology"],
  ["e_ju","l_field","field trips"],["e_ju","nurul","BSc supervisor"],["e_ju","shamsul","teacher"],["e_ju","ansari","teacher"],["ansari","l_critique"],
  ["nurul","r_oxbow","dissertation supervisor"],["nurul","w_waterkeepers","worked under his guidance"],["nurul","o_aga"],["nurul","o_bbb"],["nurul","o_lulc"],["nurul","o_rangpur"],["nurul","r_kaliganga","river morphology"],
- ["e_ju","w_irsgis"],["tawhid","w_irsgis","mentor"],["w_irsgis","l_quant"],["w_irsgis","pr_citsci"],["w_irsgis","pr_carbon"],["w_irsgis","m_gis"],["w_irsgis","m_rs"],
+ ["u_ju","w_irsgis","institute"],["u_ju","e_ju","department"],["tawhid","w_irsgis","mentor"],["w_irsgis","l_quant"],["w_irsgis","pr_citsci"],["w_irsgis","pr_carbon"],["w_irsgis","m_gis"],["w_irsgis","m_rs"],
  ["pr_citsci","m_part"],["pr_citsci","o_youth"],["pr_citsci","p_home","in Manikganj"],["pr_citsci","l_people"],["tawhid","o_bbb"],["tawhid","o_youth"],["tawhid","e_phd","prospectus guidance"],
  ["o_bbb","r_dgi","digital × disaster"],["o_bbb","w_irsgis"],["pr_carbon","m_gis"],
  ["w_icccad","pr_nbs"],["w_icccad","pr_climserv"],["w_icccad","pr_climfin"],["w_icccad","pr_walk"],["w_icccad","l_people"],["w_icccad","o_tribune"],["w_icccad","m_qual"],
@@ -338,23 +339,23 @@ const E = [
  ["w_esri","o_gisday"],["o_gisday","l_infra"],
  ["pr_storymap","m_writing"],["pr_storymap","m_gis"],["pr_lifemap","pr_storymap","successor"],["pr_lifemap","pr_chorascape"],["pr_chorascape","m_writing"],["pr_chorascape","l_story"],
  ["pr_election","pr_chorascape"],["pr_election","m_code"],["pr_football","pr_chorascape"],["pr_football","m_writing"],["pr_election","l_critique","political lens"],
- ["w_youthmappers","e_ju"],["w_youthmappers","m_part"],["w_youthmappers","pr_citsci","research project"],["w_youthmappers","m_gis"],
- ["w_soas","m_qual","transcription"],["w_soas","m_writing","translation"],["w_soas","e_ju"],
+ ["w_youthmappers","u_ju"],["w_youthmappers","w_irsgis","chapter at IRS-JU"],["w_youthmappers","m_part"],["w_youthmappers","pr_citsci","research project"],["w_youthmappers","m_gis"],
+ ["w_soas","m_qual","transcription"],["w_soas","m_writing","translation"],["w_soas","u_ju"],
  ["pr_scifair","e_secondary"],["pr_scifair","l_story"],
  ["pr_fieldwork","e_ju"],["pr_fieldwork","r_dhaleshwari","its source, Tangail"],["pr_fieldwork","l_field"],["pr_fieldwork","pr_unicef","health-system tours"],["pr_fieldwork","w_icccad","Satkhira coast"],["pr_fieldwork","m_qual"],
  ["pr_walkriver","tawhid","led by"],["pr_walkriver","r_oxbow","dissertation idea"],["pr_walkriver","l_field"],
  ["pr_craftmaps","m_gis"],["pr_craftmaps","l_story"],["pr_craftmaps","l_river","another oxbow"],["pr_craftmaps","w_esri"],
  ["o_oped","m_writing"],["o_oped","l_critique"],["o_oped","pr_dhakaenv","air & landfills"],
  ["o_usm","nurul"],["o_usm","m_rs"],["o_usm","w_irsgis"],
- ["g_gis","w_irsgis"],["g_gis","e_ju"],["g_gis","m_gis"],["g_gis","o_youth","co-authors"],["g_gis","pr_citsci"],
+ ["g_gis","w_irsgis"],["g_gis","u_ju"],["g_gis","m_gis"],["g_gis","o_youth","co-authors"],["g_gis","pr_citsci"],
  ["g_icccad","w_icccad"],["g_icccad","o_climed","co-authors"],["g_icccad","pr_nbs"],["saleemul","w_icccad","founding director"],
  ["hadi","w_esri","country manager"],["hadi","w_irsgis","first met here"],["g_esri","w_esri","guides"],["g_esri","m_ent"],
- ["g_unifriends","e_ju"],["g_schoolfriends","e_secondary"],["g_schoolfriends","pr_blog","team projects"],["g_schoolfriends","l_story"],["g_schoolfriends","p_teen"],
- ["g_peers","e_ju","other departments"],["g_peers","p_social","met online too"],["g_fbfriends","g_peers"],["g_peers","l_critique","Marx, Derrida, Foucault"],["g_peers","m_writing","little magazines"],
+ ["g_unifriends","u_ju"],["g_schoolfriends","e_secondary"],["g_schoolfriends","pr_blog","team projects"],["g_schoolfriends","l_story"],["g_schoolfriends","p_teen"],
+ ["g_peers","u_ju","other departments"],["g_peers","p_social","met online too"],["g_fbfriends","g_peers"],["g_peers","l_critique","Marx, Derrida, Foucault"],["g_peers","m_writing","little magazines"],
  ["p_social","g_fbfriends"],["g_fbfriends","l_critique","shaped thinking"],["p_social","r_dgi","origin of the idea"],["p_social","pr_craftmaps","shared on"],["p_social","o_oped"],["p_social","pr_blog","first blog"],
  ["o_daffodil","w_esri","as industry expert"],["o_daffodil","m_twin"],["o_daffodil","pr_penang"],
- ["pr_grant","w_youthmappers","won under his presidency"],["pr_grant","pr_seminars","funded"],["pr_grant","pr_fossconf","funded"],["pr_seminars","e_ju"],["pr_seminars","w_youthmappers"],["pr_fossconf","w_youthmappers","led organising team"],["pr_fossconf","w_irsgis"],["pr_fossconf","m_code","open-source GIS"],["pr_seminars","l_people","communicating GIS"],
- ["p_thailand","pr_carbon","project visit"],["g_unifriends","p_thailand","travelled together"],["joyashree","pr_carbon","guided"],["joyashree","p_thailand","AIT"],["p_thailand","w_irsgis","IRSGIS project"],
+ ["pr_grant","w_youthmappers","won under his presidency"],["pr_grant","pr_seminars","funded"],["pr_grant","pr_fossconf","funded"],["pr_seminars","u_ju"],["pr_seminars","w_youthmappers"],["pr_fossconf","w_youthmappers","led organising team"],["pr_fossconf","w_irsgis"],["pr_fossconf","m_code","open-source GIS"],["pr_seminars","l_people","communicating GIS"],
+ ["p_thailand","pr_carbon","project visit"],["pr_carbon","u_ju","campus studied"],["g_unifriends","p_thailand","travelled together"],["joyashree","pr_carbon","guided"],["joyashree","p_thailand","AIT"],["p_thailand","w_irsgis","IRSGIS project"],
  ["r_dgi","m_graph"],["e_phd","r_dgi","carries"],
  ["m_qual","l_quant"],["m_gis","l_quant"],["m_part","l_people"],["m_ent","l_infra"],["m_twin","l_infra"],["m_ml","l_climate"],["m_climate","l_climate"],["m_writing","l_story"],["m_rs","l_river"],["m_code","m_graph"],["m_ent","m_graph"],
  ["l_move","core"],["l_story","core"],["l_field","core"],["l_critique","core"],["l_quant","core"],["l_people","core"],["l_river","core"],["l_climate","core"],["l_infra","core"],["l_culture","core"],
@@ -363,19 +364,19 @@ const E = [
 
 const STRANDS = [
  {name:"The river",blurb:"Dhaleshwari floods, the Kaliganga at home, a dissertation on its oxbow lake, then flood risk in Manikganj and Rangpur.",ids:["p_maternal","r_dhaleshwari","p_home","r_kaliganga","r_oxbow","shamsul","nurul","l_river","pr_citsci","o_youth","o_rangpur","o_lulc","o_aga","m_rs","pr_walkriver","o_usm","g_gis"]},
- {name:"Learning to see spatially",blurb:"A highway watched from a study desk, field tours in 50+ districts, and IRSGIS turning curiosity into method.",ids:["p_teen","l_move","e_ju","l_field","pr_fieldwork","w_irsgis","tawhid","l_quant","m_gis","m_qual"]},
+ {name:"Learning to see spatially",blurb:"A highway watched from a study desk, field tours in 50+ districts, and IRSGIS turning curiosity into method.",ids:["p_teen","l_move","u_ju","e_ju","l_field","pr_fieldwork","w_irsgis","tawhid","l_quant","m_gis","m_qual"]},
  {name:"Science with people",blurb:"Climate science at ICCCAD, pollution activism at Waterkeepers, young citizen scientists and health-service mapping.",ids:["w_icccad","w_waterkeepers","pr_dhakaenv","pr_climserv","pr_nbs","pr_climfin","o_climed","l_people","m_part","pr_citsci","w_cipr","pr_unicef","w_youthmappers","nurul","g_icccad","saleemul","pr_seminars","pr_fossconf","pr_grant"]},
  {name:"Geography inside climate models",blurb:"Machine learning on wetlands, then spatial predictors for CMIP6 downscaling at BUET and AGU.",ids:["m_ml","m_climate","e_buet","r_cmip6","saiful","o_agu","l_climate","o_lulc","pr_jupem"]},
  {name:"GIS as infrastructure",blurb:"Digital twins, ETL and enterprise systems for Penang, Sabah, RAJUK and CAAB; ICT in disaster recovery before that.",ids:["w_esri","hadi","g_esri","o_daffodil","pr_penang","pr_rajuk","pr_sesb","pr_caab","pr_bfd","pr_trees","pr_mbpphist","m_ent","m_twin","l_infra","o_gisday","o_bbb"]},
  {name:"Stories and critique",blurb:"School friends and a first blog, op-eds, Facebook conversations, critique at JU, a first critic at home, craft maps and Chorascape.",ids:["e_secondary","pr_blog","m_writing","l_story","ansari","l_critique","pr_storymap","pr_lifemap","pr_chorascape","pr_election","pr_football","o_tribune","pr_walk","o_oped","pr_craftmaps","w_soas","pr_scifair","g_schoolfriends","p_social","g_fbfriends","g_peers","wife"]},
- {name:"Many homes, many geographies",blurb:"Maternal and paternal villages on one floodplain, school and university friends, and a second landscape in the piedmont through marriage.",ids:["p_birth","p_paternal","p_maternal","r_dhaleshwari","p_inlaws","wife","l_culture","p_uttar","g_schoolfriends","g_unifriends","p_thailand"]}
+ {name:"Many homes, many geographies",blurb:"Maternal and paternal villages on one floodplain, school and university friends, and a second landscape in the piedmont through marriage.",ids:["p_birth","p_paternal","p_maternal","r_dhaleshwari","p_inlaws","wife","l_culture","p_uttar","g_schoolfriends","g_unifriends","p_thailand","u_ju"]}
 ];
 const CORESET = ["core","r_dgi","m_graph","e_phd"];
 // Position scores: [technical(-1) … interpretive(+1), physical(-1) … social(+1)]. An approximate reading.
 const AX={p_birth:[0,.3],p_maternal:[.3,0],p_paternal:[.5,.4],r_dhaleshwari:[.1,-.8],p_uttar:[.6,.7],p_teen:[.1,.5],p_home:[.3,-.2],r_kaliganga:[.2,-.7],p_inlaws:[.6,.5],
 e_primary:[.4,.5],e_secondary:[.6,.6],e_hsc:[.5,.8],e_ju:[.2,.1],e_buet:[-.6,-.7],e_phd:[.4,.4],
 w_irsgis:[-.5,-.2],w_icccad:[.2,.3],w_cipr:[-.2,.7],w_waterkeepers:[.2,-.1],w_esri:[-.9,.2],w_soas:[.6,.6],w_youthmappers:[-.3,.4],
-tawhid:[0,0],nurul:[-.3,-.8],shamsul:[-.2,-.9],ansari:[.9,.8],saiful:[-.8,-.8],wife:[.5,.3],o_daffodil:[-.7,.4],pr_seminars:[0,.6],pr_fossconf:[-.4,.5],pr_grant:[-.2,.5],p_thailand:[0,.2],joyashree:[-.2,.1],g_gis:[-.6,0],g_icccad:[.2,.3],saleemul:[.3,.2],hadi:[-.7,.3],g_esri:[-.8,.3],g_unifriends:[.4,.7],g_schoolfriends:[.6,.8],g_fbfriends:[.8,.8],g_peers:[.95,.75],p_social:[.6,.8],
+tawhid:[0,0],nurul:[-.3,-.8],shamsul:[-.2,-.9],ansari:[.9,.8],saiful:[-.8,-.8],wife:[.5,.3],u_ju:[.1,.2],o_daffodil:[-.7,.4],pr_seminars:[0,.6],pr_fossconf:[-.4,.5],pr_grant:[-.2,.5],p_thailand:[0,.2],joyashree:[-.2,.1],g_gis:[-.6,0],g_icccad:[.2,.3],saleemul:[.3,.2],hadi:[-.7,.3],g_esri:[-.8,.3],g_unifriends:[.4,.7],g_schoolfriends:[.6,.8],g_fbfriends:[.8,.8],g_peers:[.95,.75],p_social:[.6,.8],
 pr_blog:[.7,.5],pr_scifair:[-.2,-.3],pr_citsci:[-.1,.4],pr_carbon:[-.5,-.3],pr_unicef:[-.3,.8],pr_nbs:[.1,-.4],pr_climserv:[-.2,0],pr_climfin:[.2,.6],pr_walk:[.8,.5],pr_dhakaenv:[.3,0],
 pr_penang:[-.8,.3],pr_mbpphist:[-.4,.5],pr_sesb:[-.9,.1],pr_jupem:[-1,-.3],pr_rajuk:[-.8,.4],pr_bfd:[-.7,-.1],pr_caab:[-.8,.3],pr_trees:[-.6,-.3],
 pr_storymap:[.3,.3],pr_lifemap:[.6,.6],pr_chorascape:[.8,.5],pr_election:[.5,.9],pr_football:[.6,.8],pr_fieldwork:[.3,.2],pr_walkriver:[.4,-.3],pr_craftmaps:[.4,.3],
@@ -406,7 +407,8 @@ function pathToCore(id){
   if(id==="core") return ["core"];
   const prev = new Map([[id,null]]), q=[id];
   while(q.length){ const c=q.shift(); if(c==="core") break;
-    for(const nb of adj.get(c)) if(!prev.has(nb.id)){ prev.set(nb.id,c); q.push(nb.id); } }
+    const pri={core:0,lesson:1,edu:2,work:2,output:3,method:3,project:4,place:5,person:6};
+    for(const nb of adj.get(c).slice().sort((x,y)=>pri[byId.get(x.id).type]-pri[byId.get(y.id).type])) if(!prev.has(nb.id)){ prev.set(nb.id,c); q.push(nb.id); } }
   if(!prev.has("core")) return [];
   const p=[]; let c="core"; while(c){p.unshift(c); c=prev.get(c);} return p;
 }
