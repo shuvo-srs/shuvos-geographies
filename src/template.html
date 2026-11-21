@@ -155,7 +155,7 @@ svg.posmode .node.core text{transform:translateY(-12px)}
     <div style="margin-top:22px">
       <h3>Node types · tap to hide or show</h3>
       <div class="legend" id="legend"></div>
-      <p class="small" style="margin-top:8px">Dashed ring = a chapter pinned on the <i>My Life in Map</i> portfolio (16 points). Solid ring = a group of people; hover or click to see the names.</p>
+      <p class="small" style="margin-top:8px">Dashed ring = a chapter pinned on the <i>My Life in Map</i> portfolio (16 points). Solid ring = a group of people; hover or click to see honourable mentions. Many more people contributed than could be named here.</p>
     </div>
     <p class="foot" style="margin-top:22px">Built from both CVs, the LinkedIn profile, the 2023 StoryMap, the Choroscape About page and the 16-point life-map GeoJSON. Date of birth follows the certificate. Where sources disagree on other dates, the newer academic CV is used. Position scores are an approximate reading. Drag a node to disagree.</p>
   </section>
@@ -237,6 +237,7 @@ const N = [
  {id:"g_esri",type:"person",label:"Guides at Esri Bangladesh",yr:2023,members:["Sakil Ahmed","Mohiuddin Shovon","Md Ashaduzzaman Alif"],desc:"The colleagues who guided him through professional GIS: enterprise systems, client delivery, and what GIS looks like inside an institution."},
  {id:"g_unifriends",type:"person",label:"Friends · Jahangirnagar",yr:2017,members:["Faiyad H Rishal","Soumic Samad"],desc:"University friends who were part of the everyday geography of the Jahangirnagar years."},
  {id:"g_schoolfriends",type:"person",label:"Friends · school",yr:2009,members:["Ashikur Rahman Radh","Sawmik Samad","Syed Sammo Swapno","Rafiqul Islam Shahria","Mahmudul Hasan Shuvo"],desc:"The friends from school who made the teams, plans, haunted-place investigations and imaginary political parties. They contributed to his upbringing and to his geographical knowledge long before he had a word for it."},
+ {id:"g_peers",type:"person",label:"Intellectuals & creative peers",yr:2017,members:["Mahathir Mohammad","The team of Runner (a little magazine)","The team of Terminal (a little magazine)"],desc:"Thinkers and creative people of his own age, many from other departments at Jahangirnagar and many met online. They shaped his thought by sharing Marx, Derrida, Foucault and other postmodern thinkers, and together they ran two little magazines, Runner and Terminal."},
  {id:"g_fbfriends",type:"person",label:"Facebook friends",yr:2015,members:["Rasha Noel","Shafiqul Shajib","Sheikh Salim al Deen","Rizwanul Hasan Rifat","Abdullah al Masud","Kais Mahmood"],desc:"People met and read through Facebook whose posts and conversations fed his thinking."},
  {id:"p_social",type:"place",label:"Social media · a digital place",yr:2012,desc:"Facebook and LinkedIn: where he writes, shares maps and argues, and where other people's places reach him. It is also the root of the prospectus: the idea of a diluted geographical imagination came from his own experience of digital media."},
  // ---- projects
@@ -349,6 +350,7 @@ const E = [
  ["g_icccad","w_icccad"],["g_icccad","o_climed","co-authors"],["g_icccad","pr_nbs"],["saleemul","w_icccad","founding director"],
  ["hadi","w_esri","country manager"],["hadi","w_irsgis","first met here"],["g_esri","w_esri","guides"],["g_esri","m_ent"],
  ["g_unifriends","e_ju"],["g_schoolfriends","e_secondary"],["g_schoolfriends","pr_blog","team projects"],["g_schoolfriends","l_story"],["g_schoolfriends","p_teen"],
+ ["g_peers","e_ju","other departments"],["g_peers","p_social","met online too"],["g_fbfriends","g_peers"],["g_peers","l_critique","Marx, Derrida, Foucault"],["g_peers","m_writing","little magazines"],
  ["p_social","g_fbfriends"],["g_fbfriends","l_critique","shaped thinking"],["p_social","r_dgi","origin of the idea"],["p_social","pr_craftmaps","shared on"],["p_social","o_oped"],["p_social","pr_blog","first blog"],
  ["o_daffodil","w_esri","as industry expert"],["o_daffodil","m_twin"],["o_daffodil","pr_penang"],
  ["pr_grant","w_youthmappers","won under his presidency"],["pr_grant","pr_seminars","funded"],["pr_grant","pr_fossconf","funded"],["pr_seminars","e_ju"],["pr_seminars","w_youthmappers"],["pr_fossconf","w_youthmappers","led organising team"],["pr_fossconf","w_irsgis"],["pr_fossconf","m_code","open-source GIS"],["pr_seminars","l_people","communicating GIS"],
@@ -365,7 +367,7 @@ const STRANDS = [
  {name:"Science with people",blurb:"Climate science at ICCCAD, pollution activism at Waterkeepers, young citizen scientists and health-service mapping.",ids:["w_icccad","w_waterkeepers","pr_dhakaenv","pr_climserv","pr_nbs","pr_climfin","o_climed","l_people","m_part","pr_citsci","w_cipr","pr_unicef","w_youthmappers","nurul","g_icccad","saleemul","pr_seminars","pr_fossconf","pr_grant"]},
  {name:"Geography inside climate models",blurb:"Machine learning on wetlands, then spatial predictors for CMIP6 downscaling at BUET and AGU.",ids:["m_ml","m_climate","e_buet","r_cmip6","saiful","o_agu","l_climate","o_lulc","pr_jupem"]},
  {name:"GIS as infrastructure",blurb:"Digital twins, ETL and enterprise systems for Penang, Sabah, RAJUK and CAAB; ICT in disaster recovery before that.",ids:["w_esri","hadi","g_esri","o_daffodil","pr_penang","pr_rajuk","pr_sesb","pr_caab","pr_bfd","pr_trees","pr_mbpphist","m_ent","m_twin","l_infra","o_gisday","o_bbb"]},
- {name:"Stories and critique",blurb:"School friends and a first blog, op-eds, Facebook conversations, critique at JU, a first critic at home, craft maps and Chorascape.",ids:["e_secondary","pr_blog","m_writing","l_story","ansari","l_critique","pr_storymap","pr_lifemap","pr_chorascape","pr_election","pr_football","o_tribune","pr_walk","o_oped","pr_craftmaps","w_soas","pr_scifair","g_schoolfriends","p_social","g_fbfriends","wife"]},
+ {name:"Stories and critique",blurb:"School friends and a first blog, op-eds, Facebook conversations, critique at JU, a first critic at home, craft maps and Chorascape.",ids:["e_secondary","pr_blog","m_writing","l_story","ansari","l_critique","pr_storymap","pr_lifemap","pr_chorascape","pr_election","pr_football","o_tribune","pr_walk","o_oped","pr_craftmaps","w_soas","pr_scifair","g_schoolfriends","p_social","g_fbfriends","g_peers","wife"]},
  {name:"Many homes, many geographies",blurb:"Maternal and paternal villages on one floodplain, school and university friends, and a second landscape in the piedmont through marriage.",ids:["p_birth","p_paternal","p_maternal","r_dhaleshwari","p_inlaws","wife","l_culture","p_uttar","g_schoolfriends","g_unifriends","p_thailand"]}
 ];
 const CORESET = ["core","r_dgi","m_graph","e_phd"];
@@ -373,7 +375,7 @@ const CORESET = ["core","r_dgi","m_graph","e_phd"];
 const AX={p_birth:[0,.3],p_maternal:[.3,0],p_paternal:[.5,.4],r_dhaleshwari:[.1,-.8],p_uttar:[.6,.7],p_teen:[.1,.5],p_home:[.3,-.2],r_kaliganga:[.2,-.7],p_inlaws:[.6,.5],
 e_primary:[.4,.5],e_secondary:[.6,.6],e_hsc:[.5,.8],e_ju:[.2,.1],e_buet:[-.6,-.7],e_phd:[.4,.4],
 w_irsgis:[-.5,-.2],w_icccad:[.2,.3],w_cipr:[-.2,.7],w_waterkeepers:[.2,-.1],w_esri:[-.9,.2],w_soas:[.6,.6],w_youthmappers:[-.3,.4],
-tawhid:[0,0],nurul:[-.3,-.8],shamsul:[-.2,-.9],ansari:[.9,.8],saiful:[-.8,-.8],wife:[.5,.3],o_daffodil:[-.7,.4],pr_seminars:[0,.6],pr_fossconf:[-.4,.5],pr_grant:[-.2,.5],p_thailand:[0,.2],joyashree:[-.2,.1],g_gis:[-.6,0],g_icccad:[.2,.3],saleemul:[.3,.2],hadi:[-.7,.3],g_esri:[-.8,.3],g_unifriends:[.4,.7],g_schoolfriends:[.6,.8],g_fbfriends:[.8,.8],p_social:[.6,.8],
+tawhid:[0,0],nurul:[-.3,-.8],shamsul:[-.2,-.9],ansari:[.9,.8],saiful:[-.8,-.8],wife:[.5,.3],o_daffodil:[-.7,.4],pr_seminars:[0,.6],pr_fossconf:[-.4,.5],pr_grant:[-.2,.5],p_thailand:[0,.2],joyashree:[-.2,.1],g_gis:[-.6,0],g_icccad:[.2,.3],saleemul:[.3,.2],hadi:[-.7,.3],g_esri:[-.8,.3],g_unifriends:[.4,.7],g_schoolfriends:[.6,.8],g_fbfriends:[.8,.8],g_peers:[.95,.75],p_social:[.6,.8],
 pr_blog:[.7,.5],pr_scifair:[-.2,-.3],pr_citsci:[-.1,.4],pr_carbon:[-.5,-.3],pr_unicef:[-.3,.8],pr_nbs:[.1,-.4],pr_climserv:[-.2,0],pr_climfin:[.2,.6],pr_walk:[.8,.5],pr_dhakaenv:[.3,0],
 pr_penang:[-.8,.3],pr_mbpphist:[-.4,.5],pr_sesb:[-.9,.1],pr_jupem:[-1,-.3],pr_rajuk:[-.8,.4],pr_bfd:[-.7,-.1],pr_caab:[-.8,.3],pr_trees:[-.6,-.3],
 pr_storymap:[.3,.3],pr_lifemap:[.6,.6],pr_chorascape:[.8,.5],pr_election:[.5,.9],pr_football:[.6,.8],pr_fieldwork:[.3,.2],pr_walkriver:[.4,-.3],pr_craftmaps:[.4,.3],
@@ -636,7 +638,7 @@ function showDetail(id){
       <h2>${esc(n.geo? n.geo.t.replace("Hiigher","Higher") : n.label)}</h2>
       ${n.type==="core"?"":`<span class="when">${esc(when)}</span>`}
     </div>
-    ${n.members?`<div><h3>${n.members.length>1?"People in this group":"Person"}</h3><ul class="members">${n.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
+    ${n.members?`<div><h3>Honourable mentions</h3><ul class="members">${n.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
     <div class="body">${paras}</div>
     ${n.cv?`<div class="cv">${n.cv}</div>`:""}
     ${n.geo?`<div class="mapped">Life-map chapter ${n.geo.o} of 16 · ${n.geo.c[1].toFixed(4)}°N, ${n.geo.c[0].toFixed(4)}°E</div>`:""}
@@ -659,7 +661,7 @@ nodeSel.on("click",(e,d)=>{ e.stopPropagation(); showDetail(d.id); })
 const tip=document.getElementById("tip");
 function showTip(e,d){
   const box=document.querySelector("main").getBoundingClientRect();
-  tip.innerHTML=`<span class="k">${d.members&&d.members.length>1?"Group of people":TYPES[d.type].label}</span><b>${esc(d.label)}</b>`+(d.members?`<ul>${d.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`:"");
+  tip.innerHTML=`<span class="k">${d.members&&d.members.length>1?"Group of people":TYPES[d.type].label}</span><b>${esc(d.label)}</b>`+(d.members?`<span class="k" style="display:block;margin-top:4px">Honourable mentions</span><ul>${d.members.map(m=>`<li>${esc(m)}</li>`).join("")}</ul>`:"");
   tip.style.display="block";
   let x=e.clientX-box.left+14, y=e.clientY-box.top+14;
   if(x+270>box.width) x-=290; tip.style.left=x+"px"; tip.style.top=y+"px";
